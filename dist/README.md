@@ -38,7 +38,9 @@ For the text console, **v0.7.2-sc2** is the current release: the same
 kernel and image changes as v0.7.1-tty, with SC2 Linux branding. It passed
 its automated build and manifest checks and its hardware smoke test on
 DEB 1: the banners, hostname and audio service were correct, and the smoke
-test passed 24/24. The last full eMMC verification was **v0.7.1-tty**.
+test passed 24/24. The v0.7.2-sc2 image has also been installed to the
+eMMC and cold-booted without the stick; see
+[`../docs/releases/errata-v0.7.2.md`](../docs/releases/errata-v0.7.2.md).
 The two image files named above are the same bytes; either works.
 
 v0.6-desktop is an older asset whose terminal text is unreadable, and whose

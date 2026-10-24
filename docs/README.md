@@ -68,9 +68,13 @@ When two sources disagree, the higher one wins.
   with exit 0. See [`releases/v0.7.2-sc2.md`](releases/v0.7.2-sc2.md).
 - The **previous release is v0.7.1-tty** (2026-10-24), the text-console
   product with HDMI audio, the clock fallback, the hostname fix and the
-  smoke test. It is the last release under the EON name and the last full
-  eMMC verification. See [`../README.md`](../README.md) and
+  smoke test. It is the last release under the EON name. See
+  [`../README.md`](../README.md) and
   [`releases/v0.7.1-tty.md`](releases/v0.7.1-tty.md).
+- The **v0.7.2-sc2 image has also been installed to the eMMC and
+  cold-booted without the stick**, and works correctly. This corrects the
+  release note's "not re-run" statement. See
+  [`releases/errata-v0.7.2.md`](releases/errata-v0.7.2.md).
 - The **product and repository were renamed from EON Linux to SC2 Linux**
   for v0.7.2. Releases up to v0.7.1-tty keep the earlier name as history;
   v0.7.2 is the first SC2 Linux release.

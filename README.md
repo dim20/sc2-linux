@@ -38,7 +38,7 @@ Verified on DEB 1 for v0.7.2-sc2:
 | Hostname | ✅ `sc2` |
 | HDMI audio service | ✅ `sc2-hdmi-audio.service` active |
 | Smoke test | ✅ 24/24 checks, exit 0 |
-| eMMC install / cold boot | not re-run for this build; unchanged from v0.7.1-tty |
+| eMMC install / cold boot | ✅ installed to the eMMC and cold-booted without the stick; working correctly |
 
 Full verification on the development box for v0.7.1-tty:
 
