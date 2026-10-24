@@ -61,14 +61,15 @@ When two sources disagree, the higher one wins.
   at about 12–18 s (`fbcon: Taking over console`, then
   `Console: switching to colour frame buffer device 240x67`), because no
   display manager is running.
-- The **latest build is v0.7.2-sc2** (2026-10-25), the SC2 Linux rename: the
-  same kernel and image changes as v0.7.1-tty, with new branding. It is
-  built and manifest-checked; the hardware smoke test is still pending, so
-  it is not yet a published release. See
-  [`releases/v0.7.2-sc2.md`](releases/v0.7.2-sc2.md).
-- The **last release verified on the box is v0.7.1-tty** (2026-10-24), the
-  text-console product with HDMI audio, the clock fallback, the hostname
-  fix and the smoke test. See [`../README.md`](../README.md) and
+- The **latest release is v0.7.2-sc2** (2026-10-25), the SC2 Linux rename:
+  the same kernel and image changes as v0.7.1-tty, with new branding. It
+  was verified on DEB 1 from the stick: the banners, hostname `sc2` and
+  `sc2-hdmi-audio.service` were correct, and the smoke test passed 24/24
+  with exit 0. See [`releases/v0.7.2-sc2.md`](releases/v0.7.2-sc2.md).
+- The **previous release is v0.7.1-tty** (2026-10-24), the text-console
+  product with HDMI audio, the clock fallback, the hostname fix and the
+  smoke test. It is the last release under the EON name and the last full
+  eMMC verification. See [`../README.md`](../README.md) and
   [`releases/v0.7.1-tty.md`](releases/v0.7.1-tty.md).
 - The **product and repository were renamed from EON Linux to SC2 Linux**
   for v0.7.2. Releases up to v0.7.1-tty keep the earlier name as history;

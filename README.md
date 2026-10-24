@@ -21,7 +21,7 @@ UNMODIFIED BOX + USB STICK  →  POWER CYCLE  →  LINUX, NOBODY TOUCHES IT
 
 | | |
 |---|---|
-| **Latest release** | **v0.7.2-sc2** — the SC2 Linux rename: the same kernel and image changes as v0.7.1-tty, new branding. Built and manifest-checked; hardware smoke test pending. See [`docs/releases/v0.7.2-sc2.md`](docs/releases/v0.7.2-sc2.md) |
+| **Latest release** | **v0.7.2-sc2** — the SC2 Linux rename: the same kernel and image changes as v0.7.1-tty, new branding. Verified on DEB 1: banners, hostname `sc2`, `sc2-hdmi-audio.service` active, smoke test 24/24. See [`docs/releases/v0.7.2-sc2.md`](docs/releases/v0.7.2-sc2.md) |
 | **Previous release** | **v0.7.1-tty** — the text console on HDMI and on serial; HDMI audio, the clock fallback, the hostname fix and the smoke test *(legacy EON branding)* |
 | **Previous TTY release** | **v0.7-tty** — the text console as a product *(legacy EON branding)* |
 | **The "desktop" release** | **v0.6-desktop** — named for a desktop its asset does not contain. See [`docs/releases/errata-v0.6.md`](docs/releases/errata-v0.6.md) *(legacy EON branding)* |
@@ -30,7 +30,17 @@ UNMODIFIED BOX + USB STICK  →  POWER CYCLE  →  LINUX, NOBODY TOUCHES IT
 The desktop is **frozen** and returns as an optional package set, not as a
 second image.
 
-Verified on the development box for v0.7.1-tty:
+Verified on DEB 1 for v0.7.2-sc2:
+
+| | |
+|---|---|
+| SC2 Linux banners | ✅ correct on the TV and serial console |
+| Hostname | ✅ `sc2` |
+| HDMI audio service | ✅ `sc2-hdmi-audio.service` active |
+| Smoke test | ✅ 24/24 checks, exit 0 |
+| eMMC install / cold boot | not re-run for this build; unchanged from v0.7.1-tty |
+
+Full verification on the development box for v0.7.1-tty:
 
 | | |
 |---|---|
@@ -67,17 +77,12 @@ In **v0.7-tty**:
 
 ## Quick start
 
-Download the verified TTY image (**v0.7.1-tty**, `v0.7.1-tty-img.gz`; the
-same bytes are also at the legacy current name
-`eon-s905x4-linux-stick.img.gz`) and write it to a USB stick of 1 GB or
-more. The SC2 Linux rename build, **v0.7.2-sc2**, is prepared and
-manifest-checked but its hardware smoke test is still pending; its image
-is `v0.7.2-img.gz`, also published as the new current name
-`sc2-linux-stick.img.gz`. Use v0.7.1-tty until v0.7.2-sc2 has passed the
-hardware test.
+Download the current image (**v0.7.2-sc2**, `v0.7.2-img.gz`; the same
+bytes are also published as the current asset name
+`sc2-linux-stick.img.gz`) and write it to a USB stick of 1 GB or more:
 
 ```sh
-gunzip -c v0.7.1-tty-img.gz | sudo dd of=/dev/sdX bs=4M status=progress
+gunzip -c sc2-linux-stick.img.gz | sudo dd of=/dev/sdX bs=4M status=progress
 sync
 ```
 
