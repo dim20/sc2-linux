@@ -146,8 +146,17 @@ none on the test network.
 
 ## WiFi
 
-**There is no `wlan0`, and on this box that is not a driver problem — the
-SDIO bus never sees a card at all.**
+**There is no `wlan0` on the shipped 5.4 image. The SDIO bus does not see a
+card there — but the same hardware DOES enumerate a card on the devmfc
+6.18 kernel (`mmc2: new UHS-I SDR104 SDIO card`, `serial/A2.log:319`). So
+this is two separate problems: 5.4 enumeration, and the missing SDIO
+client driver.**
+
+The vendor stack is **Broadcom BCMDHD**, not Realtek: the DTB's `wifi@1`
+child is `compatible = "brcm,bcm4329-fmac"`, `aml_wifi` carries
+`dhd_static_buf`, and every boot logs `bcmdhd_init_wlan_mem`
+(101.10.361.10). The module's MAC `ac:f4:2c:a9:d8:47` belongs to Earda
+(the module maker), which does not change the chip stack.
 
 What the software says:
 
@@ -169,10 +178,10 @@ What the hardware says:
 - **pulsing the power line** (unbind `aml_wifi`, drive GPIOX_6 low then
   high, rescan) still finds **no card**.
 
-So the SoC side is ready and the chip does not answer on Linux — but the
-module **is** present: it is soldered on the board, and it worked under
-Android. This is therefore a **vendor Linux bring-up gap**, not absent
-hardware.
+So the SoC side is ready and the chip does not answer on the **5.4 vendor
+kernel** — but the module **is** present: it is soldered on the board, it
+worked under Android, and the devmfc 6.18 kernel does enumerate the card.
+This is therefore a **vendor Linux bring-up gap**, not absent hardware.
 
 What was checked and cleared:
 
@@ -232,8 +241,13 @@ trust. See the README's security note.
 - mDNS off; the global + per-link recipe was applied and reverted, and
   `eth0` showed `+mDNS` while it was on; no second mDNS peer for an
   end-to-end lookup;
-- no `wlan0`: the module **is present** (worked under Android) but the SDIO
-  bus finds no card even after a host rebind and a power pulse; the DTB,
-  pinmux, power GPIO and 32 kHz LPO PWM are all correct, so this is a
-  vendor **Linux** bring-up gap, not missing hardware;
+- no `wlan0` on the shipped 5.4 image: the module **is present** (worked
+  under Android) but the 5.4 SDIO bus finds no card even after a host
+  rebind and a power pulse. The same hardware enumerates a card on the
+  devmfc 6.18 kernel (`mmc2: new UHS-I SDR104 SDIO card`), so this is a
+  kernel/BSP bring-up gap, not missing hardware. The DTB, pinmux, power
+  GPIO and 32 kHz LPO PWM are all correct. The vendor stack is Broadcom
+  BCMDHD (`wifi@1` compatible `brcm,bcm4329-fmac`; `bcmdhd_init_wlan_mem`),
+  not Realtek. So this is a vendor **Linux** bring-up gap, not missing
+  hardware;
 - Bluetooth unverified (no `/sys/class/bluetooth` device).
