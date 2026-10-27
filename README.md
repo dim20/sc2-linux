@@ -59,7 +59,7 @@ Full verification on the development box for v0.7.1-tty:
 | Root filesystem size | ✅ 15 GB on the eMMC, not the 744 MB it started with |
 | Audio | ✅ HDMI audio plays (set `HDMITX Audio Source Select` to `Tdm_C`; the image does it at boot — see [`docs/audio.md`](docs/audio.md)) |
 | USB keyboard on the HDMI console | ✅ login and `Ctrl-Alt-F1`…`F6` switching confirmed on the box |
-| WiFi | ❌ no open driver for the RTL8812CS |
+| WiFi | ❌ no open driver on the shipped 5.4 kernel. The vendor stack is **Broadcom BCMDHD**, and the card does enumerate on a 6.18 kernel — see [`docs/network.md`](docs/network.md) |
 
 In **v0.7-tty**:
 
