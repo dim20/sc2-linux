@@ -182,8 +182,23 @@ identifies the chip. The vendor's own 6.18 image ships
    firmware, and create `wlan0`.
 
 The working stack autoloads at boot and `iw dev wlan0 scan` returns BSS
-entries without wedging the kernel. Association has not been tested
-because no credentials are stored on the box.
+entries without wedging the kernel. A WPA2 association was tested and
+works; a sixth module, `ccm.ko`, is required (the vendor config omits
+`CONFIG_CRYPTO_CCM`, so the first handshake failed at key installation).
+Once CCM is loaded the box associates, gets DHCP, and passes traffic. A
+cold boot reconnects automatically.
+
+When this stack ships, the userspace setup is:
+
+- `wpa_supplicant@wlan0.service` enabled and the generic
+  `wpa_supplicant.service` disabled, so two supplicants do not contend
+  for `wlan0`;
+- `/etc/wpa_supplicant/wpa_supplicant-wlan0.conf` (the vendor image makes
+  this a symlink to `/root/wpa_supplicant.conf`) containing the network
+  block. Keep it mode 0600;
+- `/etc/modules-load.d/rtw88.conf` listing `ccm` and `rtw_8822cs`;
+- `systemd-networkd` then applies `/etc/systemd/network/20-wlan0.network`
+  and does DHCP. Ethernet remains the preferred default route.
 
 ### Status on the shipped image
 
