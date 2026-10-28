@@ -188,7 +188,7 @@ works; a sixth module, `ccm.ko`, is required (the vendor config omits
 Once CCM is loaded the box associates, gets DHCP, and passes traffic. A
 cold boot reconnects automatically.
 
-When the stack ships, the userspace setup is:
+The userspace setup is:
 
 - `wpa_supplicant@wlan0.service` enabled and the generic
   `wpa_supplicant.service` disabled, so two supplicants do not contend
