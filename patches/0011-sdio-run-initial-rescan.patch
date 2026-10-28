@@ -1,0 +1,25 @@
+diff --git a/drivers/mmc/host/meson-gx-mmc.c b/drivers/mmc/host/meson-gx-mmc.c
+--- a/drivers/mmc/host/meson-gx-mmc.c
++++ b/drivers/mmc/host/meson-gx-mmc.c
+@@ -3977,12 +3977,15 @@ static int meson_mmc_probe(struct platform_device *pdev)
+ 		goto err_free_irq;
+ 	}
+ 
+-	if (aml_card_type_sdio(host)) {
+-		/* do NOT run mmc_rescan for the first time */
+-		mmc->rescan_entered = 1;
+-	} else {
+-		mmc->rescan_entered = 0;
+-	}
++	/*
++	 * Allow the initial scan for SDIO as well as for the other card
++	 * types.  The vendor's aml_wifi driver powers the SDIO chip before
++	 * this host probes on the SC2 board, so suppressing the first
++	 * mmc_rescan leaves the card undiscovered.  If a board does not
++	 * power its card until userspace runs, the initial scan simply
++	 * finds nothing and sdio_reinit() can retry later.
++	 */
++	mmc->rescan_entered = 0;
+ 
+ 	if (aml_card_type_non_sdio(host)) {
+ 		struct mmc_gpio *ctx = mmc->slot.handler_priv;

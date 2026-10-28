@@ -1,8 +1,9 @@
 # Network
 
 What the box does out of the box, and the recipes for the three things
-people ask for: a static address, mDNS, and WiFi. Everything below was
-read from the eMMC system on **2026-10-23**.
+people ask for: a static address, mDNS, and WiFi. The Ethernet and mDNS
+sections were read from the eMMC system on **2026-10-23**; the WiFi
+section was updated on **2026-10-28** from the development box.
 
 ---
 
@@ -146,71 +147,61 @@ none on the test network.
 
 ## WiFi
 
-**There is no `wlan0` on the shipped 5.4 image. The SDIO bus does not see a
-card there — but the same hardware DOES enumerate a card on the devmfc
-6.18 kernel (`mmc2: new UHS-I SDR104 SDIO card`, `serial/A2.log:319`). So
-this is two separate problems: 5.4 enumeration, and the missing SDIO
-client driver.**
+**The published v0.7.2 image does not bring up WiFi.** A working 5.4 path
+has since been developed and tested on the developer's box, but it is not
+part of a published release yet. This section records what was wrong and
+what the working stack is, so the next image can ship it.
 
-The vendor stack is **Broadcom BCMDHD**, not Realtek: the DTB's `wifi@1`
-child is `compatible = "brcm,bcm4329-fmac"`, `aml_wifi` carries
-`dhd_static_buf`, and every boot logs `bcmdhd_init_wlan_mem`
-(101.10.361.10). The module's MAC `ac:f4:2c:a9:d8:47` belongs to Earda
-(the module maker), which does not change the chip stack.
+### The chip is a Realtek RTL8822CS
 
-What the software says:
+The module is an **Earda** part (MAC `ac:f4:2c:a9:d8:47`) carrying a
+**Realtek RTL8822CS**. The SDIO client identifies itself as
+`024c:c822` (`sdio:c07v024CdC822`) at
+`/sys/bus/sdio/devices/mmc1:0001:1`.
+
+Earlier documentation called this a Broadcom BCMDHD part. That was wrong.
+The DTB's `wifi@1` node says `compatible = "brcm,bcm4329-fmac"`, and the
+vendor kernel logs `bcmdhd_init_wlan_mem` / carries `dhd_static_buf`, but
+those are Amlogic's generic SDIO-WiFi glue used across modules; neither
+identifies the chip. The vendor's own 6.18 image ships
+`drivers/xtra/rtl8822cs/8822cs.ko` (Realtek driver v5.12.1.1) and the
+`rtw88` 8822c firmware, which agrees with the SDIO ID.
+
+### Two bugs on the 5.4 vendor kernel
+
+1. **The initial SDIO scan was suppressed.** `meson-gx-mmc` set
+   `mmc->rescan_entered = 1` for SDIO hosts, so the host probed and then
+   never ran `mmc_rescan` after `aml_wifi` powered the chip. Rebinding the
+   host or pulsing the power line therefore found nothing. Setting
+   `rescan_entered = 0` lets the initial scan run; the card then
+   enumerates as `mmc1: new UHS-I speed SDR104 SDIO card at address 0001`.
+2. **There was no SDIO client driver.** The vendor 5.4 tree only has
+   PCIe `rtw88` (8822BE/CE). The lwfinger `rtw88` backport supports the
+   8822CS over SDIO. Built against a config matching the running kernel
+   (plus `CONFIG_MAC80211=m`), its five modules probe the card, download
+   firmware, and create `wlan0`.
+
+The working stack autoloads at boot and `iw dev wlan0 scan` returns BSS
+entries without wedging the kernel. Association has not been tested
+because no credentials are stored on the box.
+
+### Status on the shipped image
 
 - the board DTB enables `sdio@fe088000` (`status = "okay"`, 4-bit,
-  `non-removable`, SDR104) with a `wifi@1` child
-  (`compatible = "brcm,bcm4329-fmac"`);
+  `non-removable`, SDR104) with a `wifi@1` child;
 - `aml_wifi` binds and drives its `power_on-gpios` (GPIOX_6) **high** —
   visible as `gpio-481 (GPIOX_6 |sdio_wifi) out hi`;
 - the SDIO pins are correctly muxed (`GPIOX_0..5` → `fe088000.sdio`);
-- `bcmdhd_init_wlan_mem` preallocates 8 MB.
-
-What the hardware says:
-
-- `/sys/bus/sdio/devices/` is **empty**; there is no `mmc1:0001` and no
-  `mmc1: new ...` card line in `dmesg`;
-- `mmc1` sits at the 400 kHz identification clock with power on — the
-  controller tried to enumerate a card and got no answer;
-- rebinding the SDIO host (forcing a rescan) changes nothing;
-- **pulsing the power line** (unbind `aml_wifi`, drive GPIOX_6 low then
-  high, rescan) still finds **no card**.
-
-So the SoC side is ready and the chip does not answer on the **5.4 vendor
-kernel** — but the module **is** present: it is soldered on the board, it
-worked under Android, and the devmfc 6.18 kernel does enumerate the card.
-This is therefore a **vendor Linux bring-up gap**, not absent hardware.
-
-What was checked and cleared:
-
-- the DTB is not the difference: `sdio@fe088000` carries `card_type = <3>`,
-  `non-removable`, `cap-sdio-irq`, `keep-power-in-suspend`, SDR104, and the
-  Broadcom `wifi@1` child — the same properties as the vendor's Android DTB
-  (`dev/vd/vendor.dts`);
-- the SDIO pin groups match Android's (`sdio_d0..d3`, `clk`, `cmd`, plus the
-  `GPIOX_4` clock-gate group), and they are muxed live;
-- `aml_wifi` binds, drives `GPIOX_6` high, and programs the 32 kHz LPO PWM
-  (`pwm_channel1_conf` / `pwm_channel2_conf` at ~32.7 kHz are requested and
-  enabled);
-- the defconfig has `CONFIG_MMC=y` and `CONFIG_AMLOGIC_WIFI=y`, and does
-  **not** set `WIFI_POWER_INIT_OFF`, so the driver uses the Android-style
-  "reset and power on" strategy.
-
-What still looks different, and is where the effort would go:
-
-- `/sys/bus/sdio/drivers/` is **empty** — no SDIO client driver is
-  registered at all (the vendor's `bcmdhd` SDIO glue is the usual entry);
-- the vendor's Android kernel and their Linux BSP are different trees; the
-  Linux BSP may simply not have finished the bring-up for this module.
+- but with the unpatched host and no client driver, `/sys/bus/sdio/devices/`
+  stays empty and there is no `wlan0`.
 
 `/etc/systemd/network/20-wlan0.network` is present and does DHCP with
-`RouteMetric=4096`, so Ethernet wins whenever both are up. If the Linux
-bring-up is finished, that file applies with no change.
+`RouteMetric=4096`, so Ethernet wins whenever both are up. It applies
+unchanged once the WiFi stack is in the image.
 
-**Do not expect this image to bring up wireless.** The hardware is there;
-the Linux driver path is not finished.
+**Do not expect the published image to bring up wireless.** The hardware
+works; the fix and driver exist on the development box but are not in a
+release.
 
 ## Bluetooth
 
