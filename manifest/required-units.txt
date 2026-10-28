@@ -29,3 +29,10 @@ sc2-hdmi-audio.service
 ssh.service
 chrony.service
 systemd-networkd.service
+
+# --- WiFi ----------------------------------------------------------------
+# The per-interface unit starts wpa_supplicant when wlan0 exists. The
+# generic unit is masked in the image so two supplicants do not contend
+# for the interface. The unit's Requires= means it is skipped, not failed,
+# on a board with no WiFi device.
+wpa_supplicant@wlan0.service

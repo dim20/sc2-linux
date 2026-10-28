@@ -25,6 +25,7 @@ UNMODIFIED BOX + USB STICK  →  POWER CYCLE  →  LINUX, NOBODY TOUCHES IT
 | **Previous release** | **v0.7.1-tty** — the text console on HDMI and on serial; HDMI audio, the clock fallback, the hostname fix and the smoke test *(legacy EON branding)* |
 | **Previous TTY release** | **v0.7-tty** — the text console as a product *(legacy EON branding)* |
 | **The "desktop" release** | **v0.6-desktop** — named for a desktop its asset does not contain. See [`docs/releases/errata-v0.6.md`](docs/releases/errata-v0.6.md) *(legacy EON branding)* |
+| **Next image** | **WiFi** — the Realtek RTL8822CS stack ships as six loadable modules; kernel label `5.4.210-sc2-wifi2`. Candidate built and cold-booted on the development box; not published yet. See [`docs/network.md`](docs/network.md) |
 | **Next development** | **P1** — a solid base: audio, power, thermal, storage, smoke test |
 
 The desktop is **frozen** and returns as an optional package set, not as a
@@ -59,7 +60,7 @@ Full verification on the development box for v0.7.1-tty:
 | Root filesystem size | ✅ 15 GB on the eMMC, not the 744 MB it started with |
 | Audio | ✅ HDMI audio plays (set `HDMITX Audio Source Select` to `Tdm_C`; the image does it at boot — see [`docs/audio.md`](docs/audio.md)) |
 | USB keyboard on the HDMI console | ✅ login and `Ctrl-Alt-F1`…`F6` switching confirmed on the box |
-| WiFi | ❌ no open driver on the shipped 5.4 kernel. The vendor stack is **Broadcom BCMDHD**, and the card does enumerate on a 6.18 kernel — see [`docs/network.md`](docs/network.md) |
+| WiFi | ✅ the next image ships the Realtek RTL8822CS stack as loadable modules. The published v0.7.2 image does not. The 5.4 SDIO host needed an initial-rescan fix; see [`docs/network.md`](docs/network.md) |
 
 In **v0.7-tty**:
 
@@ -442,7 +443,8 @@ Licensed by component, because they are not the same work:
 | | |
 |---|---|
 | `scripts/`, `docs/`, `notes/`, `patches/` | **MIT** — see [LICENSE](LICENSE) |
-| `kernel/Image`, `kernel/*.dtb` | **GPL-2.0** — built from CoreELEC / Amlogic sources |
+| `kernel/Image`, `kernel/*.dtb`, `kernel/modules/*.ko` | **GPL-2.0** — built from CoreELEC / Amlogic sources and the lwfinger rtw88 backport |
+| `third_party/rtw88/` | **GPL-2.0 / Dual BSD-GPL** — the backport's patch and notes |
 | the Debian rootfs in the stick image | **GPL-2.0** and the licences of the Debian packages it contains |
 
 **The rootfs is not MIT.** It is derived from

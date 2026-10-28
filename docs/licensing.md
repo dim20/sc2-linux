@@ -8,7 +8,8 @@ wrong about the largest part of it.
 | What | Licence | Where |
 |---|---|---|
 | The scripts, documentation and notes in this repository | **MIT** | `LICENSE` |
-| The kernel `Image` and the device tree `sc2_s905x4_ah212_linux.dtb` | **GPL-2.0** | `kernel/GPL-2.0-NOTICE.md` |
+| The kernel `Image`, the device tree `sc2_s905x4_ah212_linux.dtb` and the loadable modules in `kernel/modules/` | **GPL-2.0** | `kernel/GPL-2.0-NOTICE.md` and `kernel/modules/README.md` |
+| The rtw88 backport patch and notes in `third_party/rtw88/` | **GPL-2.0 / Dual BSD-GPL** | `third_party/rtw88/README-sc2.md` |
 | The Debian rootfs inside the stick image | **GPL-2.0** (and the licences of the Debian packages it contains) | below |
 
 ## The rootfs is not MIT
@@ -47,6 +48,9 @@ This project stands on the work of others, and says so:
   scripts in the rootfs are devmfc's.
 - **[CoreELEC/linux-amlogic](https://github.com/CoreELEC/linux-amlogic)** —
   the `amlogic-5.4.210` branch the vendor kernel is built from. GPL-2.0.
+- **[lwfinger/rtw88](https://github.com/lwfinger/rtw88)** — the downstream
+  rtw88 backport that supplies the RTL8822CS SDIO driver. GPL-2.0; the
+  module metadata is `Dual BSD/GPL`.
 - **Debian** — the base distribution in the rootfs, under the licences of
   its individual packages.
 

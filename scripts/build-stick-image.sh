@@ -413,6 +413,39 @@ if [ -d "$HERE/overrides" ]; then
                 cp -a "$f" "$dest"
                 log "  installed /etc/$(basename "$f")"
             done
+        elif [ "$name" = "wifi" ]; then
+            # The WiFi userspace. The modules themselves are installed
+            # from kernel/modules below; this is the configuration that
+            # loads them and gives wpa_supplicant a place to read the
+            # credentials.
+            mkdir -p "$ROOTFS_TREE/etc/modules-load.d"
+            cp -a "$src/modules-load.d/rtw88.conf" \
+                  "$ROOTFS_TREE/etc/modules-load.d/rtw88.conf"
+
+            # Keep the vendor's arrangement: the per-interface unit reads
+            # /etc/wpa_supplicant/wpa_supplicant-wlan0.conf, which is a
+            # symlink to /root/wpa_supplicant.conf. Ship a credential-free
+            # template there; the user adds their own network.
+            install -m 0600 "$src/wpa_supplicant/wpa_supplicant-wlan0.conf" \
+                    "$ROOTFS_TREE/root/wpa_supplicant.conf"
+            mkdir -p "$ROOTFS_TREE/etc/wpa_supplicant"
+            rm -f "$ROOTFS_TREE/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"
+            ln -s /root/wpa_supplicant.conf \
+                  "$ROOTFS_TREE/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"
+
+            # One supplicant only. The vendor enables the generic
+            # wpa_supplicant.service; the per-interface unit is the one
+            # that reads the wlan0 configuration. Mask the generic unit
+            # so no preset or udev rule can start it as well.
+            WANTS="$ROOTFS_TREE/etc/systemd/system/multi-user.target.wants"
+            mkdir -p "$WANTS"
+            rm -f "$WANTS/wpa_supplicant.service"
+            rm -f "$ROOTFS_TREE/var/lib/systemd/deb-systemd-helper-enabled/wpa_supplicant.service.dsh-also"
+            rm -f "$ROOTFS_TREE/var/lib/systemd/deb-systemd-helper-enabled/multi-user.target.wants/wpa_supplicant.service"
+            ln -sf /dev/null "$ROOTFS_TREE/etc/systemd/system/wpa_supplicant.service"
+            ln -sf /usr/lib/systemd/system/wpa_supplicant@.service \
+                   "$WANTS/wpa_supplicant@wlan0.service"
+            log "  installed WiFi userspace; enabled wpa_supplicant@wlan0, masked the generic unit"
         elif [ -d "$src" ]; then
             # a drop-in directory: e.g. chrony-wait.service.d/
             dest="$ROOTFS_TREE/etc/systemd/system/$name"
@@ -432,6 +465,32 @@ if [ -d "$HERE/overrides" ]; then
             log "  installed unit: $name"
         fi
     done
+fi
+
+# ---------------------------------------------------------------- WiFi modules
+# The WiFi client driver is an out-of-tree module set (the lwfinger rtw88
+# backport), so it cannot be part of the monolithic kernel Image. The
+# modules live in kernel/modules/<uname -r>/ and are copied into the image's
+# own module tree. They are built against the same kernel as kernel/Image;
+# a module whose vermagic does not match the kernel is refused by modprobe,
+# so the two must be updated together.
+MODROOT="$REPO/kernel/modules"
+if [ -f "$MODROOT/VERSION" ]; then
+    MODVER=$(cat "$MODROOT/VERSION")
+    MODSRC="$MODROOT/$MODVER"
+    MODDEST="$ROOTFS_TREE/lib/modules/$MODVER/extra"
+    if [ -d "$MODSRC" ]; then
+        mkdir -p "$MODDEST"
+        cp -a "$MODSRC"/*.ko "$MODDEST/"
+        # depmod writes modules.dep and the alias files that modprobe reads.
+        # Run it against the staged tree, not the host's own module tree.
+        depmod -b "$ROOTFS_TREE" "$MODVER"
+        log "  installed WiFi modules for $MODVER from ${MODSRC#$REPO/}"
+    else
+        log "  WARNING: $MODROOT/VERSION names $MODVER, but $MODSRC does not exist"
+    fi
+else
+    log "  no kernel/modules/VERSION - the image will have no WiFi modules"
 fi
 
 # ------------------------------------------------- the vendor's leftovers

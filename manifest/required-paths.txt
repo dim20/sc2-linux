@@ -88,3 +88,18 @@
 /sys 0755
 /run 0755
 /tmp 1777
+
+# --- the WiFi stack -------------------------------------------------------
+# The module set is copied from kernel/modules/ by the image build. The
+# module directory is named for the running kernel's uname -r; the Image
+# and these modules must be updated together. The supplicant configuration
+# is a credential-free template: the user adds their own network block.
+/etc/modules-load.d/rtw88.conf 0644
+/etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+/root/wpa_supplicant.conf 0600
+/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/ccm.ko 0644
+/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/mac80211.ko 0644
+/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/rtw_8822c.ko 0644
+/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/rtw_8822cs.ko 0644
+/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/rtw_core.ko 0644
+/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/rtw_sdio.ko 0644

@@ -1,14 +1,15 @@
 # The kernel package
 
-Last verified: **2026-10-23** against `kernel/VERSION`,
+Last verified: **2026-10-29** against `kernel/VERSION`,
 `manifest/kernel-package.txt` and `scripts/build-kernel-package.sh`.
-No package was built during the documentation pass.
+A package was built and installed on the development box during the WiFi
+work.
 
 The kernel for this box, as a Debian package, so that `apt` can
 install it and switch between versions.
 
 ```
-apt install ./linux-image-sc2_5.4.210-sc2_arm64.deb
+apt install ./linux-image-sc2_5.4.210-sc2-wifi2_arm64.deb
 ```
 
 ---
@@ -42,8 +43,11 @@ The package does all three.
 | `sc2-kernel-list` | what is installed, and what is active |
 | `sc2-kernel-select` | choose which kernel boots |
 
-**There are no modules.** The kernel is built with everything built in,
-so the package has no `/lib/modules` tree, and it is small.
+**The package contains no modules.** The kernel Image is monolithic except
+for the WiFi stack, and those modules ship in the OS image, not in this
+package. The package has no `/usr/lib/modules` tree, so it stays small. A
+kernel-package update replaces the Image; the matching WiFi modules must
+come from the same release image (or be rebuilt against the new kernel).
 
 ## The version label, and `uname -r`
 
@@ -51,11 +55,11 @@ Two strings appear in this project and they are **not the same thing**:
 
 | | value | what it is |
 |---|---|---|
-| `kernel/VERSION` | `5.4.210-sc2` | the release label for the package — the version apt sees |
+| `kernel/VERSION` | `5.4.210-sc2-wifi2` | the release label for the package — the version apt sees |
 | `uname -r` | `5.4.210-ga3aaaa5b0e64-dirty` | what the kernel reports — the vendor tree's `git describe` output |
 
 The package is versioned with the label, so the file is
-`linux-image-sc2_5.4.210-sc2_arm64.deb`. The running kernel keeps the
+`linux-image-sc2_5.4.210-sc2-wifi2_arm64.deb`. The running kernel keeps the
 vendor string, because changing it would mean rebuilding the `Image` to
 change a string — and the published `Image` has been reproduced and
 tested. The label is the **package's** identity, not the kernel's.
@@ -139,7 +143,7 @@ to be fetched at install time.
 ```sh
 scripts/build-kernel-package.sh --kernel kernel/Image \
                                 --dtb kernel/sc2_s905x4_ah212_linux.dtb \
-                                --version 5.4.210-sc2
+                                --version 5.4.210-sc2-wifi2
 ```
 
 `SOURCE_DATE_EPOCH` must be set, or the package is not reproducible —

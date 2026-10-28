@@ -99,9 +99,10 @@ When two sources disagree, the higher one wins.
   v0.6 asset was *named* for a desktop it does not contain; its terminal
   text was unreadable in the box's own desktop install. See
   [`releases/errata-v0.6.md`](releases/errata-v0.6.md).
-- The box has **no loadable modules**: the kernel is monolithic, which is
-  why the vendor's module tree is dead weight (see
-  [`../manifest/vendor-leftovers.txt`](../manifest/vendor-leftovers.txt)).
+- The box's kernel is monolithic except for the **WiFi stack**, which ships
+  as six loadable modules (`mac80211`, `ccm`, and four rtw88 modules) under
+  `kernel/modules/`. The vendor's 6.18 module tree is still dead weight; see
+  [`../manifest/vendor-leftovers.txt`](../manifest/vendor-leftovers.txt).
 
 ## How to verify a claim
 

@@ -96,3 +96,20 @@ CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
 # to the right device because the vendor driver marks its primary-plane
 # framebuffer FBINFO_PRIMARY - see patches/0003 and patches/0009.
 CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER=y
+#
+# ---------------------------------------------------------------------------
+# WiFi: mac80211 and CCM as modules
+#
+# WHY: the board's SDIO WiFi module is a Realtek RTL8822CS. The vendor
+# 5.4 tree's in-tree rtw88 driver has no SDIO support, so the SDIO client
+# driver is the lwfinger rtw88 backport, built out of tree against this
+# kernel. It needs mac80211 and the CCMP cipher. The vendor defconfig
+# leaves both off, so WPA2 association fails at key installation even
+# when the driver itself probes correctly.
+#
+# These are modules rather than built-in so the out-of-tree rtw88 modules
+# can link against mac80211's exported symbols. The image ships the
+# modules in /lib/modules/<uname -r>/extra/; they are not in the kernel
+# package, which remains Image-only by design.
+CONFIG_MAC80211=m
+CONFIG_CRYPTO_CCM=m

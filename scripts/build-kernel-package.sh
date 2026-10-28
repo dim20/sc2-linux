@@ -27,8 +27,9 @@
 # WHAT IS IN THE PACKAGE
 #
 #   The kernel Image (34.5 MB) and the device tree. There are NO
-#   MODULES: the kernel is built with everything in, so the package has
-#   no /lib/modules tree, and that is why it is small.
+#   MODULES: the Image is monolithic except for the WiFi stack. Those
+#   modules ship in the OS image, not in this package, so the package
+#   has no /lib/modules tree and stays small.
 #
 # WHAT IT DOES NOT DO
 #
@@ -150,8 +151,8 @@ Description: The SC2 Linux kernel for the EON SDSTB02 (Amlogic S905X4), installa
  on this box. Several versions can be installed at once; sc2-kernel-list
  shows them and sc2-kernel-select chooses which one boots.
  .
- This package contains no modules: the kernel is built with everything
- built in.
+ This package contains no modules. The WiFi stack ships in the OS image,
+ not in this package.
 EOF
 
 # The md5sums file is what dpkg uses to verify the installed files.

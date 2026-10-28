@@ -59,11 +59,11 @@ package-hashes-from = kernel/SHA256SUMS
 
 # The package must NOT contain a module tree.
 #
-# The kernel is built with everything in, so there are no modules to
-# install. A package that carried one would be installing modules for
-# a kernel that cannot load them - the same dead weight as the
-# vendor's module tree, which manifest/forbidden-paths.txt keeps out
-# of the image.
+# The Image is monolithic except for the WiFi stack. Those modules are
+# shipped by the OS image under /lib/modules/<uname -r>/extra/, not by
+# this package. A package that carried a module tree would have to keep
+# it in step with the Image, and the kernel package stays Image-only by
+# design.
 package-forbid = usr/lib/modules
 
 # The package must not contain anything from the desktop.

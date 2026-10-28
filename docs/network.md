@@ -148,9 +148,9 @@ none on the test network.
 ## WiFi
 
 **The published v0.7.2 image does not bring up WiFi.** A working 5.4 path
-has since been developed and tested on the developer's box, but it is not
-part of a published release yet. This section records what was wrong and
-what the working stack is, so the next image can ship it.
+has since been developed, tested on the developer's box and integrated into
+the current tree: the next image ships it as loadable modules. This section
+records what was wrong, what the working stack is and how it is shipped.
 
 ### The chip is a Realtek RTL8822CS
 
@@ -188,7 +188,7 @@ works; a sixth module, `ccm.ko`, is required (the vendor config omits
 Once CCM is loaded the box associates, gets DHCP, and passes traffic. A
 cold boot reconnects automatically.
 
-When this stack ships, the userspace setup is:
+When the stack ships, the userspace setup is:
 
 - `wpa_supplicant@wlan0.service` enabled and the generic
   `wpa_supplicant.service` disabled, so two supplicants do not contend
@@ -200,23 +200,29 @@ When this stack ships, the userspace setup is:
 - `systemd-networkd` then applies `/etc/systemd/network/20-wlan0.network`
   and does DHCP. Ethernet remains the preferred default route.
 
-### Status on the shipped image
+### Status in the current tree
 
-- the board DTB enables `sdio@fe088000` (`status = "okay"`, 4-bit,
-  `non-removable`, SDR104) with a `wifi@1` child;
-- `aml_wifi` binds and drives its `power_on-gpios` (GPIOX_6) **high** —
-  visible as `gpio-481 (GPIOX_6 |sdio_wifi) out hi`;
-- the SDIO pins are correctly muxed (`GPIOX_0..5` → `fe088000.sdio`);
-- but with the unpatched host and no client driver, `/sys/bus/sdio/devices/`
-  stays empty and there is no `wlan0`.
+The current tree carries both fixes:
 
-`/etc/systemd/network/20-wlan0.network` is present and does DHCP with
-`RouteMetric=4096`, so Ethernet wins whenever both are up. It applies
-unchanged once the WiFi stack is in the image.
+- `patches/0011-sdio-run-initial-rescan.patch` lets the 5.4 host run its
+  initial scan after `aml_wifi` powers the chip;
+- the image ships the in-tree `mac80211.ko` and `ccm.ko`, plus the four
+  lwfinger rtw88 modules, from `kernel/modules/`.
 
-**Do not expect the published image to bring up wireless.** The hardware
-works; the fix and driver exist on the development box but are not in a
-release.
+The board DTB enables `sdio@fe088000` (`status = "okay"`, 4-bit,
+`non-removable`, SDR104) with a `wifi@1` child; `aml_wifi` drives
+`GPIOX_6` high and the SDIO pins are muxed to the host. On the development
+box the stack cold-boots, enumerates as
+`mmc1: new UHS-I speed SDR104 SDIO card`, creates `wlan0`, associates to
+`TP-Link_8860` and passes traffic. The same cold boot was repeated with the
+stripped module set that ships in the image.
+
+`/etc/systemd/network/20-wlan0.network` does DHCP with
+`RouteMetric=4096`, so Ethernet wins whenever both are up.
+
+The published v0.7.2 image remains without WiFi; the next image built from
+this tree carries it. The `iw scan` warning is lifted for this stack: it
+returns BSS entries and does not wedge the kernel.
 
 ## Bluetooth
 
@@ -235,7 +241,8 @@ trust. See the README's security note.
 
 ## Last verified
 
-**2026-10-23**, on the eMMC system (`/dev/mmcblk0p2`):
+**2026-10-23**, Ethernet and the base network on the eMMC system
+(`/dev/mmcblk0p2`):
 
 - eth0 DHCP via systemd-networkd: `192.168.1.20/24`, gateway
   `192.168.1.1`, 100 Mbps full duplex, IPv4 and IPv6;
@@ -246,14 +253,20 @@ trust. See the README's security note.
   worked, eth0 unaffected); the exact eth0 change not applied live;
 - mDNS off; the global + per-link recipe was applied and reverted, and
   `eth0` showed `+mDNS` while it was on; no second mDNS peer for an
-  end-to-end lookup;
-- no `wlan0` on the shipped 5.4 image: the module **is present** (worked
-  under Android) but the 5.4 SDIO bus finds no card even after a host
-  rebind and a power pulse. The same hardware enumerates a card on the
-  devmfc 6.18 kernel (`mmc2: new UHS-I SDR104 SDIO card`), so this is a
-  kernel/BSP bring-up gap, not missing hardware. The DTB, pinmux, power
-  GPIO and 32 kHz LPO PWM are all correct. The vendor stack is Broadcom
-  BCMDHD (`wifi@1` compatible `brcm,bcm4329-fmac`; `bcmdhd_init_wlan_mem`),
-  not Realtek. So this is a vendor **Linux** bring-up gap, not missing
-  hardware;
-- Bluetooth unverified (no `/sys/class/bluetooth` device).
+  end-to-end lookup.
+
+**2026-10-29**, WiFi on the development box after a cold boot of the new
+kernel and the stripped module set:
+
+- the SDIO card enumerates as `mmc1: new ultra high speed SDR104 SDIO
+  card at address 0001`;
+- `rtw_8822cs` loads firmware 9.9.6 (WOW 9.9.4) and creates `wlan0`
+  with MAC `ac:f4:2c:a9:d8:47`;
+- `wpa_supplicant@wlan0.service` is active and associates to
+  `TP-Link_8860` with `PTK=CCMP GTK=TKIP`;
+- `iw dev wlan0 link` shows the association and `ping 1.1.1.1` passes;
+- `iw dev wlan0 scan` returns BSS entries without wedging the kernel.
+
+Bluetooth is still unverified: the kernel has `bt_init`, `hci_uart` and
+H4 registered, but there is no `/sys/class/bluetooth` device and no
+Bluetooth tooling installed.

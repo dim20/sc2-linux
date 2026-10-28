@@ -1,8 +1,8 @@
 # Building the kernel
 
-Last verified: **2026-10-23** against `kernel/VERSION`,
-`kernel/SHA256SUMS` and `patches/`. No build was run during the
-documentation pass, so the build log below is the 2026-10-21 one.
+Last verified: **2026-10-29** against `kernel/VERSION`,
+`kernel/SHA256SUMS`, `patches/` and `kernel/modules/`. The kernel and the
+WiFi modules were rebuilt and cold-booted on the development box.
 
 Required for two reasons: to rebuild the `Image` this project ships, and to
 satisfy GPL-2.0 §3, which requires that anyone given the binary is also given
@@ -22,8 +22,8 @@ against `kernel/SHA256SUMS`. You do not need to build anything.
 | Commit | `a3aaaa5b0` |
 | Licence | GPL-2.0 |
 | Config | `arch/arm64/configs/meson64_a64_P_defconfig` + `patches/0002-option-D.config.delta` |
-| Local patches | [`../patches/`](../patches/) — eight source patches (0001, 0003, 0005–0008, 0010) and one config delta (0002); see the table below. A ninth, `0009`, was dropped on 2026-10-23 — its justification did not survive testing |
-| Produced | `Image` (34,551,816 bytes) and `sc2_s905x4_ah212_linux.dtb` (78,952 bytes) |
+| Local patches | [`../patches/`](../patches/) — eight source patches (0001, 0003, 0005–0008, 0010, 0011) and one config delta (0002); see the table below. A ninth, `0009`, was dropped on 2026-10-23 — its justification did not survive testing |
+| Produced | `Image` (34,551,816 bytes), `sc2_s905x4_ah212_linux.dtb` (78,952 bytes) and the six WiFi modules in `kernel/modules/` |
 
 Everything below is what was actually done. Where something was a workaround
 rather than a clean fix, it says so.
@@ -221,8 +221,9 @@ the display, and each one is explained where it matters — in
 | `0007-fbdev-buffer-lifetime.patch` | unmaps on close without freeing, retires a replaced buffer, frees when the framebuffer goes away | proven |
 | `0008-fbdev-smem-start.patch` | leaves `fix.smem_start` at zero instead of the physical address, which the X server treats as an offset into its own mapping | proven |
 | `0010-fbdev-console-owns-the-mapping.patch` | a user closing `/dev/fb0` must not clear `screen_base`: the console holds its own reference and keeps drawing through it | proven, 2026-10-23 (P0-1) |
+| `0011-sdio-run-initial-rescan.patch` | lets `meson-gx-mmc` run the initial scan for a non-removable SDIO host; the vendor set `rescan_entered = 1`, so the host probed but never rescanned after `aml_wifi` powered the chip | proven on hardware, 2026-10-28 |
 
-**There were nine source patches; there are eight.** A patch that stopped
+**The original series had nine source patches; `0009` was dropped, and `0011` later added the SDIO rescan fix.** A patch that stopped
 the vendor's OSD driver freeing 8 MB of CMA a minute after boot (`0009`)
 was removed on 2026-10-23. Its stated reason — that the free pulls the
 memory out from under the display and the box dies every minute — did not
@@ -244,6 +245,35 @@ setting `FBINFO_PRIMARY` after `register_framebuffer()`, which is too
 late; it is repaired here.
 
 ---
+
+## Build the WiFi modules
+
+The Image is monolithic except for the WiFi stack. The in-tree modules are
+`mac80211.ko` and `ccm.ko`; the four rtw88 modules come from the lwfinger
+backport. Build the in-tree modules with the same output directory and
+flags as the Image:
+
+```sh
+make ARCH=arm64 CROSS_COMPILE=$CROSS_COMPILE O=out \
+     CRYPTO_CFLAGS="-I$P/usr/include" CRYPTO_LIBS="-L$P/lib -lcrypto" \
+     KBUILD_BUILD_TIMESTAMP="$STAMP" \
+     KCFLAGS="-ffile-prefix-map=$PWD=/build/linux" \
+     KAFLAGS="-ffile-prefix-map=$PWD=/build/linux" \
+     modules
+```
+
+Then build the out-of-tree rtw88 modules against the same output tree. The
+source, the local 5.4 compatibility patch and the exact steps are in
+[`third_party/rtw88/README-sc2.md`](../third_party/rtw88/README-sc2.md) and
+`SC2-NOTES.md`. Strip the resulting `.ko` files with
+`aarch64-buildroot-linux-gnu-strip --strip-debug`, then place them in
+`kernel/modules/<uname -r>/`. `kernel/modules/VERSION` names the version
+directory; the image build copies the modules and runs `depmod`.
+
+The modules must be built against the same kernel as `kernel/Image`. A
+module whose vermagic does not match is refused by `modprobe`; update the
+Image and the module set together. The kernel package remains Image-only:
+the modules ship in the OS image.
 
 ## Use the `_linux` DTB variant
 
@@ -269,7 +299,7 @@ If you build this kernel, use `sc2_s905x4_ah212_linux.dtb`.
 ## Verify your build
 
 ```
-45a677435e2af01c5c77dd60692f60ce9482eaa51725fd983717e552d873c0d0  Image
+e8e4dda14d3cb2580395880f068298ab8c60266d75377cd7c39734a6f73370b5  Image
 d1e2267f5e945acff73f7a8973af9fcbb2d777faf26771e2a7e75687537ffda8  sc2_s905x4_ah212_linux.dtb
 ```
 

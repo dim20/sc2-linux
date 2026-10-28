@@ -97,10 +97,10 @@ the eMMC's p1. The vendor's copy in /boot is never used.
 ## A note on the kernel's own modules
 
 Our kernel builds 119 loadable modules (the DVB tuners, and two Amlogic
-media modules) and we ship NONE of them — only the monolithic Image. So
-the box has no loadable modules at all, for either kernel.
+media modules) and we ship only the six WiFi modules — the Image itself
+carries no loadable module tree. The vendor's 6.18 module tree is dead
+weight for a different kernel.
 
-This matters for the WiFi question (P5c): the Realtek driver the chip
-needs is not enabled in our kernel's configuration at all
-(CONFIG_RTL8XXU and CONFIG_RTLWIFI are not set), so WiFi needs a driver
-built and enabled, not just a module file added.
+The WiFi question is now answered: the chip is a Realtek RTL8822CS, and
+the six modules are built from the vendor tree plus the lwfinger rtw88
+backport. See `kernel/modules/README.md` and `docs/network.md`.
