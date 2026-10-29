@@ -304,7 +304,7 @@ d1e2267f5e945acff73f7a8973af9fcbb2d777faf26771e2a7e75687537ffda8  sc2_s905x4_ah2
 ```
 
 These are the current hashes in [`../kernel/SHA256SUMS`](../kernel/SHA256SUMS),
-which tracks **the kernel this repository ships** — the one v0.7 will use.
+which tracks **the kernel this repository ships** — the one v0.7.3-wifi uses.
 **They are not the hashes of any released image.** Each release note under
 [`releases/`](releases/) records its own, and those are frozen: the
 v0.6-desktop `Image` is `39b91fd0…`, the v0.5.x `Image` is `93420f6a…`.
