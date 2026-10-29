@@ -221,8 +221,11 @@ stripped module set that ships in the image.
 `RouteMetric=4096`, so Ethernet wins whenever both are up.
 
 The published v0.7.2 image remains without WiFi; the next image built from
-this tree carries it. The `iw scan` warning is lifted for this stack: it
-returns BSS entries and does not wedge the kernel.
+this tree carries it. A candidate image was built on 2026-10-29 and written
+to a USB stick, where it verified byte-for-byte; a stick boot and an eMMC
+install are the remaining steps before it can be published. The `iw scan`
+warning is lifted for this stack: it returns BSS entries and does not wedge
+the kernel.
 
 ## Bluetooth
 
