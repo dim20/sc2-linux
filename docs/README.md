@@ -55,26 +55,27 @@ When two sources disagree, the higher one wins.
 3. **One question, one answer.** If two documents answer the same
    question, one of them links to the other.
 
-## What is true now (2026-10-24)
+## What is true now (2026-10-29)
 
 - The **text console on HDMI works**: the kernel takes the display over
   at about 12–18 s (`fbcon: Taking over console`, then
   `Console: switching to colour frame buffer device 240x67`), because no
   display manager is running.
-- The **latest release is v0.7.2-sc2** (2026-10-25), the SC2 Linux rename:
-  the same kernel and image changes as v0.7.1-tty, with new branding. It
-  was verified on DEB 1 from the stick: the banners, hostname `sc2` and
-  `sc2-hdmi-audio.service` were correct, and the smoke test passed 24/24
-  with exit 0. See [`releases/v0.7.2-sc2.md`](releases/v0.7.2-sc2.md).
-- The **previous release is v0.7.1-tty** (2026-10-24), the text-console
-  product with HDMI audio, the clock fallback, the hostname fix and the
-  smoke test. It is the last release under the EON name. See
-  [`../README.md`](../README.md) and
-  [`releases/v0.7.1-tty.md`](releases/v0.7.1-tty.md).
-- The **v0.7.2-sc2 image has also been installed to the eMMC and
-  cold-booted without the stick**, and works correctly. This corrects the
-  release note's "not re-run" statement. See
+- The **latest release is v0.7.3-wifi** (2026-10-29): the Realtek
+  RTL8822CS WiFi stack, shipped as six loadable modules. It was verified
+  on DEB 1 from the stick (24/24 smoke checks), installed to the eMMC,
+  and cold-booted standalone from `/dev/mmcblk0p2` (24/24 again). The
+  stack enumerates the card, loads firmware and creates `wlan0`; the
+  image ships a credential-free WPA template. See
+  [`releases/v0.7.3-wifi.md`](releases/v0.7.3-wifi.md).
+- The **previous release is v0.7.2-sc2** (2026-10-25), the SC2 Linux
+  rename. It was installed to the eMMC and cold-booted without the stick;
+  see [`releases/v0.7.2-sc2.md`](releases/v0.7.2-sc2.md) and
   [`releases/errata-v0.7.2.md`](releases/errata-v0.7.2.md).
+- The **v0.7.1-tty release** (2026-10-24) is the text-console product with
+  HDMI audio, the clock fallback, the hostname fix and the smoke test. It
+  is the last release under the EON name. See
+  [`releases/v0.7.1-tty.md`](releases/v0.7.1-tty.md).
 - The **product and repository were renamed from EON Linux to SC2 Linux**
   for v0.7.2. Releases up to v0.7.1-tty keep the earlier name as history;
   v0.7.2 is the first SC2 Linux release.

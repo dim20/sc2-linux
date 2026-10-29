@@ -287,6 +287,7 @@ d	755	0:0	-	-	etc/modprobe.d
 f	644	0:0	212	-	etc/modules
 d	755	0:0	-	-	etc/modules-load.d
 l	777	0:0	-	../modules	etc/modules-load.d/modules.conf
+f	644	0:0	291	-	etc/modules-load.d/rtw88.conf
 f	644	0:0	287	-	etc/motd
 d	755	0:0	-	-	etc/mpv
 f	644	0:0	333	-	etc/mpv/mpv.conf
@@ -798,7 +799,7 @@ l	777	0:0	-	/etc/systemd/system/sc2-hdmi-audio.service	etc/systemd/system/multi-
 l	777	0:0	-	/usr/lib/systemd/system/ssh.service	etc/systemd/system/multi-user.target.wants/ssh.service
 l	777	0:0	-	/usr/lib/systemd/system/sysfsutils.service	etc/systemd/system/multi-user.target.wants/sysfsutils.service
 l	777	0:0	-	/usr/lib/systemd/system/systemd-networkd.service	etc/systemd/system/multi-user.target.wants/systemd-networkd.service
-l	777	0:0	-	/usr/lib/systemd/system/wpa_supplicant.service	etc/systemd/system/multi-user.target.wants/wpa_supplicant.service
+l	777	0:0	-	/usr/lib/systemd/system/wpa_supplicant@.service	etc/systemd/system/multi-user.target.wants/wpa_supplicant@wlan0.service
 d	755	0:0	-	-	etc/systemd/system/network-online.target.wants
 l	777	0:0	-	/usr/lib/systemd/system/systemd-networkd-wait-online.service	etc/systemd/system/network-online.target.wants/systemd-networkd-wait-online.service
 l	777	0:0	-	/usr/lib/systemd/system/rng-tools-debian.service	etc/systemd/system/rng-tools.service
@@ -837,6 +838,7 @@ l	777	0:0	-	/usr/lib/systemd/system/e2scrub_all.timer	etc/systemd/system/timers.
 l	777	0:0	-	/usr/lib/systemd/system/fake-hwclock-save.timer	etc/systemd/system/timers.target.wants/fake-hwclock-save.timer
 l	777	0:0	-	/lib/systemd/system/fstrim.timer	etc/systemd/system/timers.target.wants/fstrim.timer
 l	777	0:0	-	/usr/lib/tm16xx-display/tm16xx-display.service	etc/systemd/system/tm16xx-display.service
+l	777	0:0	-	/dev/null	etc/systemd/system/wpa_supplicant.service
 f	644	0:0	632	-	etc/systemd/system/zram-config.service
 l	777	0:0	-	/usr/lib/qubian/systemd/system/zram-config.service.d	etc/systemd/system/zram-config.service.d
 f	644	0:0	1076	-	etc/systemd/timesyncd.conf
@@ -911,6 +913,7 @@ f	755	0:0	25953	-	root/install-to-emmc.sh
 f	755	0:0	6792	-	root/prepare-stick.sh
 f	755	0:0	8200	-	root/rescue-init.sh
 f	755	0:0	11175	-	root/smoke-test.sh
+f	600	0:0	825	-	root/wpa_supplicant.conf
 d	755	0:0	-	-	run
 d	755	0:0	-	-	run/sshd
 l	777	0:0	-	usr/sbin	sbin
@@ -3124,6 +3127,25 @@ f	644	0:0	326	-	usr/lib/modprobe.d/aliases.conf
 f	644	0:0	390	-	usr/lib/modprobe.d/fbdev-blacklist.conf
 f	644	0:0	821	-	usr/lib/modprobe.d/systemd.conf
 d	755	0:0	-	-	usr/lib/modules
+d	755	0:0	-	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty
+d	755	0:0	-	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra
+f	644	0:0	27520	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/ccm.ko
+f	644	0:0	1303832	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/mac80211.ko
+f	644	0:0	496336	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/rtw_8822c.ko
+f	644	0:0	6584	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/rtw_8822cs.ko
+f	644	0:0	381376	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/rtw_core.ko
+f	644	0:0	40768	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/rtw_sdio.ko
+f	644	0:0	245	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/modules.alias
+f	644	0:0	417	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/modules.alias.bin
+f	644	0:0	0	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/modules.builtin.alias.bin
+f	644	0:0	0	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/modules.builtin.bin
+f	644	0:0	275	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/modules.dep
+f	644	0:0	677	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/modules.dep.bin
+f	644	0:0	0	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/modules.devname
+f	644	0:0	55	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/modules.softdep
+f	644	0:0	8987	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/modules.symbols
+f	644	0:0	10946	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/modules.symbols.bin
+f	644	0:0	55	-	usr/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/modules.weakdep
 d	755	0:0	-	-	usr/lib/modules/6.18.55-meson64
 d	755	0:0	-	-	usr/lib/modules/6.18.55-meson64/kernel
 d	755	0:0	-	-	usr/lib/modules/6.18.55-meson64/kernel/arch
@@ -16026,7 +16048,6 @@ f	644	0:0	0	-	var/lib/systemd/deb-systemd-helper-enabled/multi-user.target.wants
 f	644	0:0	0	-	var/lib/systemd/deb-systemd-helper-enabled/multi-user.target.wants/rng-tools-debian.service
 f	644	0:0	0	-	var/lib/systemd/deb-systemd-helper-enabled/multi-user.target.wants/ssh.service
 f	644	0:0	0	-	var/lib/systemd/deb-systemd-helper-enabled/multi-user.target.wants/sysfsutils.service
-f	644	0:0	0	-	var/lib/systemd/deb-systemd-helper-enabled/multi-user.target.wants/wpa_supplicant.service
 f	644	0:0	107	-	var/lib/systemd/deb-systemd-helper-enabled/rng-tools-debian.service.dsh-also
 f	644	0:0	0	-	var/lib/systemd/deb-systemd-helper-enabled/rng-tools.service
 d	755	0:0	-	-	var/lib/systemd/deb-systemd-helper-enabled/shutdown.target.wants
@@ -16061,7 +16082,6 @@ f	644	0:0	0	-	var/lib/systemd/deb-systemd-helper-enabled/timers.target.wants/dpk
 f	644	0:0	0	-	var/lib/systemd/deb-systemd-helper-enabled/timers.target.wants/e2scrub_all.timer
 f	644	0:0	0	-	var/lib/systemd/deb-systemd-helper-enabled/timers.target.wants/fake-hwclock-save.timer
 f	644	0:0	0	-	var/lib/systemd/deb-systemd-helper-enabled/timers.target.wants/fstrim.timer
-f	644	0:0	122	-	var/lib/systemd/deb-systemd-helper-enabled/wpa_supplicant.service.dsh-also
 d	755	0:0	-	-	var/lib/systemd/deb-systemd-user-helper-enabled
 d	755	0:0	-	-	var/lib/systemd/deb-systemd-user-helper-enabled/default.target.wants
 f	644	0:0	0	-	var/lib/systemd/deb-systemd-user-helper-enabled/default.target.wants/mpris-proxy.service

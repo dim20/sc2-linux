@@ -21,25 +21,27 @@ UNMODIFIED BOX + USB STICK  →  POWER CYCLE  →  LINUX, NOBODY TOUCHES IT
 
 | | |
 |---|---|
-| **Latest release** | **v0.7.2-sc2** — the SC2 Linux rename: the same kernel and image changes as v0.7.1-tty, new branding. Verified on DEB 1: banners, hostname `sc2`, `sc2-hdmi-audio.service` active, smoke test 24/24. See [`docs/releases/v0.7.2-sc2.md`](docs/releases/v0.7.2-sc2.md) |
-| **Previous release** | **v0.7.1-tty** — the text console on HDMI and on serial; HDMI audio, the clock fallback, the hostname fix and the smoke test *(legacy EON branding)* |
+| **Latest release** | **v0.7.3-wifi** — the Realtek RTL8822CS WiFi stack, shipped as six loadable modules; kernel label `5.4.210-sc2-wifi2`. Verified on DEB 1: stick boot 24/24, eMMC install, standalone cold boot 24/24. See [`docs/releases/v0.7.3-wifi.md`](docs/releases/v0.7.3-wifi.md) |
+| **Previous release** | **v0.7.2-sc2** — the SC2 Linux rename. See [`docs/releases/v0.7.2-sc2.md`](docs/releases/v0.7.2-sc2.md) |
+| **Previous TTY release** | **v0.7.1-tty** — the text console on HDMI and serial; HDMI audio, the clock fallback, the hostname fix and the smoke test *(legacy EON branding)* |
 | **Previous TTY release** | **v0.7-tty** — the text console as a product *(legacy EON branding)* |
 | **The "desktop" release** | **v0.6-desktop** — named for a desktop its asset does not contain. See [`docs/releases/errata-v0.6.md`](docs/releases/errata-v0.6.md) *(legacy EON branding)* |
-| **Next image** | **WiFi** — the Realtek RTL8822CS stack ships as six loadable modules; kernel label `5.4.210-sc2-wifi2`. Candidate built, stick-booted, smoke-tested (24/24), installed to the eMMC and cold-booted standalone (24/24 again). Verified; not published yet. See [`docs/network.md`](docs/network.md) |
 | **Next development** | **P1** — a solid base: audio, power, thermal, storage, smoke test |
 
 The desktop is **frozen** and returns as an optional package set, not as a
 second image.
 
-Verified on DEB 1 for v0.7.2-sc2:
+Verified on DEB 1 for v0.7.3-wifi:
 
 | | |
 |---|---|
 | SC2 Linux banners | ✅ correct on the TV and serial console |
 | Hostname | ✅ `sc2` |
 | HDMI audio service | ✅ `sc2-hdmi-audio.service` active |
-| Smoke test | ✅ 24/24 checks, exit 0 |
-| eMMC install / cold boot | ✅ installed to the eMMC and cold-booted without the stick; working correctly |
+| Smoke test from the stick | ✅ 24/24 checks, exit 0 |
+| eMMC install | ✅ installer exited 0 and verified the Image, DTB and modules |
+| eMMC standalone cold boot | ✅ root `/dev/mmcblk0p2`, smoke test 24/24 again |
+| WiFi stack | ✅ `mmc1` SDIO card enumerated, `rtw_8822cs` firmware loaded, `wlan0` present. The image ships a credential-free template; WPA2 association was verified on the development box |
 
 Full verification on the development box for v0.7.1-tty:
 
@@ -60,7 +62,7 @@ Full verification on the development box for v0.7.1-tty:
 | Root filesystem size | ✅ 15 GB on the eMMC, not the 744 MB it started with |
 | Audio | ✅ HDMI audio plays (set `HDMITX Audio Source Select` to `Tdm_C`; the image does it at boot — see [`docs/audio.md`](docs/audio.md)) |
 | USB keyboard on the HDMI console | ✅ login and `Ctrl-Alt-F1`…`F6` switching confirmed on the box |
-| WiFi | ✅ the next image ships the Realtek RTL8822CS stack as loadable modules. The published v0.7.2 image does not. The 5.4 SDIO host needed an initial-rescan fix; see [`docs/network.md`](docs/network.md) |
+| WiFi | ✅ v0.7.3-wifi ships the Realtek RTL8822CS stack as loadable modules. v0.7.2 does not. The 5.4 SDIO host needed an initial-rescan fix; see [`docs/network.md`](docs/network.md) |
 
 In **v0.7-tty**:
 
@@ -78,8 +80,8 @@ In **v0.7-tty**:
 
 ## Quick start
 
-Download the current image (**v0.7.2-sc2**, `v0.7.2-img.gz`; the same
-bytes are also published as the current asset name
+Download the current image (**v0.7.3-wifi**, `v0.7.3-wifi-img.gz`; the
+same bytes are also published as the current asset name
 `sc2-linux-stick.img.gz`) and write it to a USB stick of 1 GB or more:
 
 ```sh

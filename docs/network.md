@@ -147,10 +147,9 @@ none on the test network.
 
 ## WiFi
 
-**The published v0.7.2 image does not bring up WiFi.** A working 5.4 path
-has since been developed, tested on the developer's box and integrated into
-the current tree: the next image ships it as loadable modules. This section
-records what was wrong, what the working stack is and how it is shipped.
+**v0.7.2 does not bring up WiFi. v0.7.3-wifi does**, as six loadable
+modules. This section records what was wrong, what the working stack is and
+how it is shipped.
 
 ### The chip is a Realtek RTL8822CS
 
@@ -220,13 +219,11 @@ stripped module set that ships in the image.
 `/etc/systemd/network/20-wlan0.network` does DHCP with
 `RouteMetric=4096`, so Ethernet wins whenever both are up.
 
-The published v0.7.2 image remains without WiFi; the next image built from
-this tree carries it. A candidate image was built on 2026-10-29, written to
-a USB stick and verified byte-for-byte, booted from the stick (24/24 smoke
-checks), installed to the eMMC, and cold-booted from the eMMC with the
-stick removed (24/24 smoke checks again). It is verified; only the release
-note, tag and publication remain. The `iw scan` warning is lifted for this
-stack: it returns BSS entries and does not wedge the kernel.
+**v0.7.3-wifi ships this stack.** The image was written to a USB stick and
+verified byte-for-byte, booted from the stick (24/24 smoke checks),
+installed to the eMMC, and cold-booted from the eMMC with the stick removed
+(24/24 smoke checks again). The `iw scan` warning is lifted for this stack:
+it returns BSS entries and does not wedge the kernel.
 
 ## Bluetooth
 
