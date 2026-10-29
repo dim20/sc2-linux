@@ -223,10 +223,10 @@ stripped module set that ships in the image.
 The published v0.7.2 image remains without WiFi; the next image built from
 this tree carries it. A candidate image was built on 2026-10-29, written to
 a USB stick and verified byte-for-byte, booted from the stick (24/24 smoke
-checks) and installed to the eMMC. A standalone cold boot with the stick
-removed is the remaining hardware check before publication. The `iw scan`
-warning is lifted for this stack: it returns BSS entries and does not wedge
-the kernel.
+checks), installed to the eMMC, and cold-booted from the eMMC with the
+stick removed (24/24 smoke checks again). It is verified; only the release
+note, tag and publication remain. The `iw scan` warning is lifted for this
+stack: it returns BSS entries and does not wedge the kernel.
 
 ## Bluetooth
 
