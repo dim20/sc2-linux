@@ -27,7 +27,7 @@ BCMDHD** throughout:
 - the running kernel's own strings include `bcmdhd_init_wlan_mem`,
   `bcmdhd_mem_prealloc` and `dhd_static_buf`.
 
-The module's MAC `ac:f4:2c:a9:d8:47` resolves to **Earda**, which is the
+The module's MAC `ac:f4:2c:xx:xx:xx` resolves to **Earda**, which is the
 module maker, not the chip vendor. The "Realtek" idea most likely came
 from the vendor's `drivers/xtra` leftovers (MT7668, RTL8189/8821/8822),
 which are for *other* board variants and are not this board's stack.

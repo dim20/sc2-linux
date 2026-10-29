@@ -36,7 +36,7 @@ supported by a saved log.** The vendor BSP is **Broadcom BCMDHD**: the
 board DTB's `wifi@1` child is `compatible = "brcm,bcm4329-fmac"`, the
 `aml_wifi` node carries `dhd_static_buf`, and every boot logs
 `bcmdhd_init_wlan_mem` (101.10.361.10). The module's MAC
-`ac:f4:2c:a9:d8:47` resolves to Earda (the module maker), not a chip
+`ac:f4:2c:xx:xx:xx` resolves to Earda (the module maker), not a chip
 vendor. The "Realtek" idea most likely came from the vendor's
 `drivers/xtra` leftovers for other board variants. The missing driver is
 the Broadcom `bcmdhd` SDIO glue, not a Realtek one. See

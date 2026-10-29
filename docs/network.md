@@ -35,7 +35,7 @@ On the test network that gives:
 
 ```
 eth0   UP   192.168.1.20/24
-           2a02:586:.../64  fe80::ad:32ff:fe01:ab6b/64
+           2001:db8:.../64  fe80::.../64
 gateway    192.168.1.1
 speed      100 Mbps, full duplex
 ```
@@ -153,7 +153,7 @@ how it is shipped.
 
 ### The chip is a Realtek RTL8822CS
 
-The module is an **Earda** part (MAC `ac:f4:2c:a9:d8:47`) carrying a
+The module is an **Earda** part (MAC `ac:f4:2c:xx:xx:xx`) carrying a
 **Realtek RTL8822CS**. The SDIO client identifies itself as
 `024c:c822` (`sdio:c07v024CdC822`) at
 `/sys/bus/sdio/devices/mmc1:0001:1`.
@@ -213,7 +213,7 @@ The board DTB enables `sdio@fe088000` (`status = "okay"`, 4-bit,
 `GPIOX_6` high and the SDIO pins are muxed to the host. On the development
 box the stack cold-boots, enumerates as
 `mmc1: new UHS-I speed SDR104 SDIO card`, creates `wlan0`, associates to
-`TP-Link_8860` and passes traffic. The same cold boot was repeated with the
+`example-ssid` and passes traffic. The same cold boot was repeated with the
 stripped module set that ships in the image.
 
 `/etc/systemd/network/20-wlan0.network` does DHCP with
@@ -262,9 +262,9 @@ kernel and the stripped module set:
 - the SDIO card enumerates as `mmc1: new ultra high speed SDR104 SDIO
   card at address 0001`;
 - `rtw_8822cs` loads firmware 9.9.6 (WOW 9.9.4) and creates `wlan0`
-  with MAC `ac:f4:2c:a9:d8:47`;
+  with MAC `ac:f4:2c:xx:xx:xx`;
 - `wpa_supplicant@wlan0.service` is active and associates to
-  `TP-Link_8860` with `PTK=CCMP GTK=TKIP`;
+  `example-ssid` with `PTK=CCMP GTK=TKIP`;
 - `iw dev wlan0 link` shows the association and `ping 1.1.1.1` passes;
 - `iw dev wlan0 scan` returns BSS entries without wedging the kernel.
 

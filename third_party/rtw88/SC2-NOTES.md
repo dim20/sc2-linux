@@ -46,7 +46,7 @@ The rebuilt modules load and the RTL8822CS probes:
     rtw_8822cs mmc1:0001:1: Firmware version 9.9.6, H2C version 15
     rtw_8822cs mmc1:0001:1: WOW Firmware version 9.9.4, H2C version 15
 
-`wlan0` appears (MAC `ac:f4:2c:a9:d8:47`), and `iw dev wlan0 scan`
+`wlan0` appears (MAC `ac:f4:2c:xx:xx:xx`), and `iw dev wlan0 scan`
 returns BSS entries without wedging the kernel. A cold boot autoloads the
 stack via `/etc/modules-load.d/rtw88.conf`.
 
@@ -63,7 +63,7 @@ install `crypto/ccm.ko` as well:
 Copy `crypto/ccm.ko` to
 `/lib/modules/5.4.210-ga3aaaa5b0e64-dirty/extra/` and add `ccm` to
 `/etc/modules-load.d/rtw88.conf`. With CCM loaded the box associates to
-`TP-Link_8860`, gets DHCP, and passes traffic. A cold boot reconnects
+`example-ssid`, gets DHCP, and passes traffic. A cold boot reconnects
 automatically through `wpa_supplicant@wlan0.service` (the generic
 `wpa_supplicant.service` is disabled to avoid contention).
 
