@@ -16,7 +16,10 @@ general-purpose Linux computer. It is not a media centre.
 |---|---|
 | use the box | [`../README.md`](../README.md) — status, quick start, safety |
 | understand what is true right now | this page, then [`../README.md`](../README.md) |
-| know what is planned | `plan/PLAN-OF-RECORD.md` in the development repository (not part of this one) |
+| know what is planned | [`development.md`](development.md#roadmap) |
+| see what works and what does not | [`limitations.md`](limitations.md) |
+| understand the board and its boot chain | [`hardware.md`](hardware.md) |
+| build, verify or release an image | [`development.md`](development.md) |
 | fix a box that will not boot | [`recovery.md`](recovery.md) |
 | start from an untouched or OTA-upgraded box | [`factory-box-install.md`](factory-box-install.md) — serial console, manual USB boot, install to eMMC |
 | rebuild the kernel or the image | [`build-the-kernel.md`](build-the-kernel.md), [`kernel-package.md`](kernel-package.md) |
@@ -41,7 +44,7 @@ When two sources disagree, the higher one wins.
 | 3 | **`docs/releases/`** | The release notes. Immutable once published; corrections are added as **errata**, not by rewriting them. |
 | 4 | **`README.md`** | The current product and status. Always describes the latest release. |
 | 5 | **`docs/`** (this directory) | How-to and reference. Behaviour claims carry a `Last verified` date where they have been checked. |
-| 6 | **`plan/PLAN-OF-RECORD.md`** | Decisions, priorities and the to-do list. The only current plan; everything else in `plan/` is archived. |
+| 6 | **The development repository's `plan/PLAN-OF-RECORD.md`** | Decisions, priorities and the to-do list. The only current plan; everything else in `plan/` is archived. |
 | 7 | **`notes/`** | A chronological lab notebook. Allowed to be wrong; never a source of truth without a matching document. |
 
 ## Three rules
@@ -57,53 +60,21 @@ When two sources disagree, the higher one wins.
 
 ## What is true now (2026-10-29)
 
-- The **text console on HDMI works**: the kernel takes the display over
-  at about 12–18 s (`fbcon: Taking over console`, then
-  `Console: switching to colour frame buffer device 240x67`), because no
-  display manager is running.
-- The **latest release is v0.7.3-wifi** (2026-10-29): the Realtek
-  RTL8822CS WiFi stack, shipped as six loadable modules. It was verified
-  on DEB 1 from the stick (24/24 smoke checks), installed to the eMMC,
-  and cold-booted standalone from `/dev/mmcblk0p2` (24/24 again). The
-  stack enumerates the card, loads firmware and creates `wlan0`; the
-  image ships a credential-free WPA template. See
+- The **latest release is v0.7.3-wifi**: the RTL8822CS WiFi stack as six
+  loadable modules. It passed the stick boot, eMMC install and standalone
+  eMMC boot gates. See
   [`releases/v0.7.3-wifi.md`](releases/v0.7.3-wifi.md).
-- The **previous release is v0.7.2-sc2** (2026-10-25), the SC2 Linux
-  rename. It was installed to the eMMC and cold-booted without the stick;
-  see [`releases/v0.7.2-sc2.md`](releases/v0.7.2-sc2.md) and
-  [`releases/errata-v0.7.2.md`](releases/errata-v0.7.2.md).
-- The **v0.7.1-tty release** (2026-10-24) is the text-console product with
-  HDMI audio, the clock fallback, the hostname fix and the smoke test. It
-  is the last release under the EON name. See
-  [`releases/v0.7.1-tty.md`](releases/v0.7.1-tty.md).
-- The **product and repository were renamed from EON Linux to SC2 Linux**
-  for v0.7.2. Releases up to v0.7.1-tty keep the earlier name as history;
-  v0.7.2 is the first SC2 Linux release.
-- The **v0.7.1 image has been exercised end-to-end**: written to a stick,
-  read back in full with `cmp`, booted on the box; the text console came
-  up, the root was `/dev/sda2`, and `smoke-test.sh` passed **24/24,
-  exit 0**. That boot is what closed the two branding/unit defects the
-  first build had. It was then **installed on the eMMC and cold-booted
-  with no stick present**: it came up on `/dev/mmcblk0p2`, 0 failed
-  units, and passed the smoke test again.
-- An **untouched factory box** does not autoboot the USB stick: its
-  U-Boot boots the eMMC first. The prompt is open and **no fastboot
-  unlock is needed**. `run recovery_from_udisk` booted the v0.7.1 stick
-  on a factory S905X4, and `smoke-test.sh` passed 24/24. See
-  [`factory-box-install.md`](factory-box-install.md).
-- A box whose **eMMC boot fails** — for example after its `vbmeta` was
-  edited — **autoboots the USB stick**. That is the vendor's emergency
-  fallback (`storeboot` → `update` → `recovery_from_udisk`), not an
-  unlock and not a modified `bootcmd`: every tested box, including the
-  "unlocked" one, still reports `bootcmd=run storeboot`.
-- The **desktop is frozen** and returns as an optional package set. The
-  v0.6 asset was *named* for a desktop it does not contain; its terminal
-  text was unreadable in the box's own desktop install. See
-  [`releases/errata-v0.6.md`](releases/errata-v0.6.md).
-- The box's kernel is monolithic except for the **WiFi stack**, which ships
-  as six loadable modules (`mac80211`, `ccm`, and four rtw88 modules) under
-  `kernel/modules/`. The vendor's 6.18 module tree is still dead weight; see
-  [`../manifest/vendor-leftovers.txt`](../manifest/vendor-leftovers.txt).
+- The **text console on HDMI works** and the USB stick is both installer
+  and recovery key.
+- **WiFi works** once credentials are added; the image ships a
+  credential-free template. See [`network.md`](network.md).
+- The **desktop is frozen** and returns, if at all, as an optional package
+  set. There is no GPU-accelerated 3D.
+- The kernel is a **vendor 5.4.210 tree**; it does not track upstream
+  security updates.
+- An **untouched factory box** may need `run recovery_from_udisk` once on
+  the serial console. See [`factory-box-install.md`](factory-box-install.md).
+- The full caveat list is in [`limitations.md`](limitations.md).
 
 ## How to verify a claim
 
