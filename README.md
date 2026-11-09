@@ -33,7 +33,7 @@ the full note, assets and hashes.
 
 Download the current image from the
 [Releases page](https://github.com/dim20/sc2-linux/releases/latest). The
-file is `v0.7.3-wifi-img.gz`; the same bytes are published as
+file is `v0.8.0-docker-img.gz`; the same bytes are published as
 `sc2-linux-stick.img.gz`.
 
 Write it to a USB stick of 1 GB or more:

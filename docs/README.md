@@ -59,12 +59,15 @@ When two sources disagree, the higher one wins.
 3. **One question, one answer.** If two documents answer the same
    question, one of them links to the other.
 
-## What is true now (2026-10-29)
+## What is true now (2026-11-09)
 
-- The **latest release is v0.7.3-wifi**: the RTL8822CS WiFi stack as six
-  loadable modules. It passed the stick boot, eMMC install and standalone
-  eMMC boot gates. See
-  [`releases/v0.7.3-wifi.md`](releases/v0.7.3-wifi.md).
+- The **current release candidate is v0.8.0-docker**: Docker, containerd
+  and runc support, with the optional filesystems shipped as loadable
+  modules. The kernel package passed on hardware (cold boot, namespaces,
+  Docker `hello-world`, bridge networking); the stick boot is the
+  remaining gate. v0.7.3-wifi remains the last published release until
+  that gate passes. See
+  [`releases/v0.8.0-docker.md`](releases/v0.8.0-docker.md).
 - The **text console on HDMI works** and the USB stick is both installer
   and recovery key.
 - **WiFi works** once credentials are added; the image ships a
