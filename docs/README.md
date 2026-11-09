@@ -19,6 +19,7 @@ general-purpose Linux computer. It is not a media centre.
 | know what is planned | [`development.md`](development.md#roadmap) |
 | see what works and what does not | [`limitations.md`](limitations.md) |
 | understand the board and its boot chain | [`hardware.md`](hardware.md) |
+| know which version is installed | [`kernel-package.md`](kernel-package.md#which-version-is-installed) |
 | build, verify or release an image | [`development.md`](development.md) |
 | fix a box that will not boot | [`recovery.md`](recovery.md) |
 | start from an untouched or OTA-upgraded box | [`factory-box-install.md`](factory-box-install.md) — serial console, manual USB boot, install to eMMC |

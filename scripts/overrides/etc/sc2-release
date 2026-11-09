@@ -11,7 +11,13 @@
 # the login message. The product name is SC2 Linux; the repository is
 # sc2-linux. Keep this file shell-compatible: the MOTD header
 # sources it.
+#
+# VERSION is the release this image was built as, e.g. v0.7.3-wifi. It is
+# the answer to "which version is on this box" without hashing anything.
+# scripts/release.sh stamps it from the release it is cutting, so the
+# value below is only the fallback for a bare build-stick-image.sh run.
 
+VERSION="v0.7.3-wifi"
 NAME="SC2 Linux"
 PORT="sc2-linux"
 BOARD="EON SDSTB02 (Amlogic S905X4 / SC2)"

@@ -67,6 +67,54 @@ tested. The label is the **package's** identity, not the kernel's.
 `sc2-kernel-list` shows both, so there is no need to guess which is which.
 Do not hand-edit the `Image` to make the strings match.
 
+## Which version is installed
+
+There is no single string that identifies a release, so pick the answer
+that matches what you need.
+
+**The released image** — `/etc/sc2-release` names it:
+
+```sh
+cat /etc/sc2-release
+```
+
+`VERSION` is the release the image was built as, e.g. `v0.7.3-wifi`.
+`scripts/release.sh` stamps it at build time, so it is set on any image
+built after v0.7.3-wifi. Older images are found by what they *lack*:
+
+| On the box | It is |
+|---|---|
+| `/etc/eon-release` exists | older than v0.7.2 (legacy EON branding) |
+| `/etc/sc2-release`, no `VERSION` line | v0.7.2 or v0.7.3-wifi |
+| `/etc/sc2-release` with `VERSION=` | that release, or later |
+| `/lib/modules/$(uname -r)/extra/rtw_*.ko` present | v0.7.3-wifi or later (WiFi shipped) |
+
+**The kernel package** — `sc2-kernel-list` prints every kernel installed
+under `/usr/lib/sc2-kernel/`, the archive, and which one the boot
+partition holds; `dpkg -l sc2-kernel` gives the label apt knows
+(`5.4.210-sc2-wifi2` is v0.7.3-wifi, `5.4.210-sc2` is v0.7.2). A plain
+OS-image install does not carry the package, so this may be absent.
+
+**The exact kernel on the boot partition** — hash it. This is the only
+method that depends on nothing installed on the box:
+
+```sh
+mkdir -p /mnt/b && mount -o ro /dev/mmcblk0p1 /mnt/b
+sha256sum /mnt/b/Image /mnt/b/sc2_s905x4_ah212_linux.dtb
+umount /mnt/b
+```
+
+Compare with the release's `SHA256SUMS` (in `dist/`, or on the Releases
+page). For v0.7.3-wifi:
+
+```
+e8e4dda14d3cb2580395880f068298ab8c60266d75377cd7c39734a6f73370b5  Image
+d1e2267f5e945acff73f7a8973af9fcbb2d777faf26771e2a7e75687537ffda8  sc2_s905x4_ah212_linux.dtb
+```
+
+`uname -r` does **not** identify the release: it is the vendor tree's
+`git describe` output and is identical across v0.7.2 and v0.7.3-wifi.
+
 ## What it does not do
 
 It does not install the kernel into the root filesystem's `/boot`. That

@@ -81,6 +81,14 @@ else
     fail "/etc/sc2-release is missing"
 fi
 
+# The release this image was built as. Images built before the stamp existed
+# have no VERSION line, so this is a warning rather than a failure.
+if grep -q '^VERSION="' /etc/sc2-release 2>/dev/null; then
+    ok "the release is $(sed -n 's/^VERSION="\(.*\)"/\1/p' /etc/sc2-release)"
+elif [ -f /etc/sc2-release ]; then
+    warn "/etc/sc2-release has no VERSION= line (an image built before the stamp)"
+fi
+
 for f in /etc/issue /etc/issue.net; do
     if [ -f "$f" ]; then
         if grep -q 'SC2 Linux' "$f"; then

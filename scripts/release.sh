@@ -49,7 +49,7 @@ mkdir -p "$DIST"
 # ---------------------------------------------------------------- 1. build
 echo
 echo "=== 1. building the image ==========================================="
-"$HERE/build-stick-image.sh" "$TREE" "$DIST/$NAME-img.gz"
+SC2_VERSION="$NAME" "$HERE/build-stick-image.sh" "$TREE" "$DIST/$NAME-img.gz"
 
 # ---------------------------------------------------------------- 2. record
 echo

@@ -14,6 +14,8 @@
 #   3. Every relative Markdown link resolves.
 #   4. The branding overrides contain no vendor strings.
 #   5. Every login file the manifest requires has an override source.
+#   6. /etc/sc2-release carries a VERSION= line, so a box can name its
+#      release without hashing anything.
 #
 # Exit status: 0 if everything passes, 1 if anything does not.
 #
@@ -107,6 +109,16 @@ for f in "${BRAND_FILES[@]}"; do
         ok
     fi
 done
+
+# ---------------------------------------------------------------- release
+# The image names its release in /etc/sc2-release. Without a VERSION= line a
+# box can only be identified by hashing its kernel, so make sure the source
+# override has one.
+if grep -qE '^VERSION="?[^"]' scripts/overrides/etc/sc2-release; then
+    ok
+else
+    fail "scripts/overrides/etc/sc2-release has no non-empty VERSION= line"
+fi
 
 # ---------------------------------------------------------------- sources
 # Every login file the manifest requires must come from an override, or a

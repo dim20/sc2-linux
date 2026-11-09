@@ -87,6 +87,9 @@ IMG_MB=$(( 16 + P1_SIZE_MB + P2_SIZE_MB ))
 KERNEL=${KERNEL:-$REPO/kernel/Image}
 DTB=${DTB:-$REPO/kernel/sc2_s905x4_ah212_linux.dtb}
 MKIMAGE=${MKIMAGE:-$HERE/../tools/utils/mkimage}
+# The release name stamped into /etc/sc2-release. release.sh sets it to the
+# release it is cutting; a bare build keeps the value in the override file.
+SC2_VERSION=${SC2_VERSION:-}
 
 log()  { printf '[build-image] %s\n' "$*"; }
 die()  { printf '[build-image] ERROR: %s\n' "$*" >&2; exit 1; }
@@ -413,6 +416,14 @@ if [ -d "$HERE/overrides" ]; then
                 cp -a "$f" "$dest"
                 log "  installed /etc/$(basename "$f")"
             done
+            # Stamp the release version when one was given (release.sh does).
+            # The override file carries the last released value as the
+            # fallback for a plain build.
+            if [ -n "$SC2_VERSION" ] && [ -f "$ROOTFS_TREE/etc/sc2-release" ]; then
+                sed -i "s|^VERSION=.*|VERSION=\"$SC2_VERSION\"|" \
+                    "$ROOTFS_TREE/etc/sc2-release"
+                log "  stamped /etc/sc2-release: VERSION=\"$SC2_VERSION\""
+            fi
         elif [ "$name" = "wifi" ]; then
             # The WiFi userspace. The modules themselves are installed
             # from kernel/modules below; this is the configuration that

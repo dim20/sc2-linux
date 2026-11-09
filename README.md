@@ -119,6 +119,7 @@ The full ladder, including the UART wiring and recovery commands, is in
 | configure network, static IP, mDNS or WiFi | [`docs/network.md`](docs/network.md) |
 | see the full limitations and traps | [`docs/limitations.md`](docs/limitations.md), [`docs/troubleshooting.md`](docs/troubleshooting.md) |
 | understand the board and boot chain | [`docs/hardware.md`](docs/hardware.md) |
+| know which version is installed | [`docs/kernel-package.md`](docs/kernel-package.md#which-version-is-installed) |
 | build the kernel, image or release | [`docs/development.md`](docs/development.md), [`docs/build-the-kernel.md`](docs/build-the-kernel.md) |
 | see what changed in each release | [`docs/releases/`](docs/releases/) |
 | know the licences and provenance | [`docs/licensing.md`](docs/licensing.md) |

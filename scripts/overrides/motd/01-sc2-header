@@ -21,6 +21,6 @@
 
 [ -r /etc/sc2-release ] && . /etc/sc2-release
 
-echo "  ${NAME:-SC2 Linux} - ${BASE:-Debian}"
+echo "  ${NAME:-SC2 Linux}${VERSION:+ $VERSION} - ${BASE:-Debian}"
 echo "  sc2-linux - Debian for the EON SDSTB02 (Amlogic S905X4 / SC2)"
 echo
