@@ -151,8 +151,8 @@ Description: The SC2 Linux kernel for the EON SDSTB02 (Amlogic S905X4), installa
  on this box. Several versions can be installed at once; sc2-kernel-list
  shows them and sc2-kernel-select chooses which one boots.
  .
- This package contains no modules. The WiFi stack ships in the OS image,
- not in this package.
+ This package contains no modules. The loadable modules (the WiFi stack and
+ the optional filesystems) ship in the OS image, not in this package.
 EOF
 
 # The md5sums file is what dpkg uses to verify the installed files.

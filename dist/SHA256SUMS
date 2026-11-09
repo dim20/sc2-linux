@@ -1,7 +1,7 @@
-# v0.7.3-wifi
+# v0.8.0-docker
 # verify with: sha256sum -c SHA256SUMS
-c4a843b896b0d3441d405d3735c1ff4c5085616ff42beb5caa93c73d25b30ea9  v0.7.3-wifi-img.gz
-c4a843b896b0d3441d405d3735c1ff4c5085616ff42beb5caa93c73d25b30ea9  sc2-linux-stick.img.gz
-e8e4dda14d3cb2580395880f068298ab8c60266d75377cd7c39734a6f73370b5  Image
+77ab2d81d605235b54e0128191ad368fbef4a262ef2f1e5550c527b80e2f5cfc  v0.8.0-docker-img.gz
+77ab2d81d605235b54e0128191ad368fbef4a262ef2f1e5550c527b80e2f5cfc  sc2-linux-stick.img.gz
+ee6433ad409e9250e2b13f3993949843aa51eef6771cd8d1729c7c08caad71ec  Image
 d1e2267f5e945acff73f7a8973af9fcbb2d777faf26771e2a7e75687537ffda8  sc2_s905x4_ah212_linux.dtb
-7c8f5a958e649cbd2f618613a93a878f2ce5084279c6d20b5b763227c83e3fc3  linux-image-sc2_5.4.210-sc2-wifi2_arm64.deb
+f7a006bbf7fefe7fbe30b4b94f758fa8c66fb3052e30e2cadcdc6d2b44fffdb6  linux-image-sc2_5.4.210-sc2-docker1_arm64.deb

@@ -1,8 +1,9 @@
 # Building the kernel
 
-Last verified: **2026-10-29** against `kernel/VERSION`,
+Last verified: **2026-11-09** against `kernel/VERSION`,
 `kernel/SHA256SUMS`, `patches/` and `kernel/modules/`. The kernel and the
-WiFi modules were rebuilt and cold-booted on the development box.
+loadable modules were rebuilt, the kernel package was installed and
+cold-booted on the development box, and Docker ran a container.
 
 Required for two reasons: to rebuild the `Image` this project ships, and to
 satisfy GPL-2.0 §3, which requires that anyone given the binary is also given
@@ -23,7 +24,7 @@ against `kernel/SHA256SUMS`. You do not need to build anything.
 | Licence | GPL-2.0 |
 | Config | `arch/arm64/configs/meson64_a64_P_defconfig` + `patches/0002-option-D.config.delta` |
 | Local patches | [`../patches/`](../patches/) — eight source patches (0001, 0003, 0005–0008, 0010, 0011) and one config delta (0002); see the table below. A ninth, `0009`, was dropped on 2026-10-23 — its justification did not survive testing |
-| Produced | `Image` (34,551,816 bytes), `sc2_s905x4_ah212_linux.dtb` (78,952 bytes) and the six WiFi modules in `kernel/modules/` |
+| Produced | `Image` (37,021,704 bytes), `sc2_s905x4_ah212_linux.dtb` (78,952 bytes) and the 28 loadable modules in `kernel/modules/` |
 
 Everything below is what was actually done. Where something was a workaround
 rather than a clean fix, it says so.
@@ -246,12 +247,11 @@ late; it is repaired here.
 
 ---
 
-## Build the WiFi modules
+## Build the loadable modules
 
-The Image is monolithic except for the WiFi stack. The in-tree modules are
-`mac80211.ko` and `ccm.ko`; the four rtw88 modules come from the lwfinger
-backport. Build the in-tree modules with the same output directory and
-flags as the Image:
+The kernel is monolithic except for the WiFi stack and the optional
+filesystems that do not have to be present at boot. Build the in-tree
+modules with the same output directory and flags as the Image:
 
 ```sh
 make ARCH=arm64 CROSS_COMPILE=$CROSS_COMPILE O=out \
@@ -262,13 +262,30 @@ make ARCH=arm64 CROSS_COMPILE=$CROSS_COMPILE O=out \
      modules
 ```
 
+The in-tree set is `mac80211` (the rtw88 backport links against it), the
+optional filesystems (`btrfs`, `xfs`, `cifs`, `nfs` and their `zstd`,
+`xxhash`, `xor` and `raid6` dependencies), the storage targets
+(`dm-thin-pool`, `dm-persistent-data`, `dm-bio-prison`, `nbd`) and `md4`
+for CIFS NTLM.
+
+`ccm` and `f2fs` are built in, not modules. CCM is selected by CIFS and
+mac80211 uses it through the crypto API. f2fs cannot be a module on this
+vendor tree: ext4 defines `trace_android_fs_*` without `EXPORT_SYMBOL`, so
+an `f2fs.ko` cannot resolve those symbols and refuses to load.
+
+Use `make modules_install INSTALL_MOD_STRIP=1` to get the authoritative set
+for the current config. Do not ship stale `.ko` files left in the output
+directory by an older config — `modules.order` is the list of what the
+current config actually builds.
+
 Then build the out-of-tree rtw88 modules against the same output tree. The
 source, the local 5.4 compatibility patch and the exact steps are in
 [`third_party/rtw88/README-sc2.md`](../third_party/rtw88/README-sc2.md) and
 `SC2-NOTES.md`. Strip the resulting `.ko` files with
 `aarch64-buildroot-linux-gnu-strip --strip-debug`, then place them in
 `kernel/modules/<uname -r>/`. `kernel/modules/VERSION` names the version
-directory; the image build copies the modules and runs `depmod`.
+directory; the image build copies the modules, replaces any previous set in
+`/lib/modules/<uname -r>/extra/`, and runs `depmod`.
 
 The modules must be built against the same kernel as `kernel/Image`. A
 module whose vermagic does not match is refused by `modprobe`; update the
@@ -299,12 +316,12 @@ If you build this kernel, use `sc2_s905x4_ah212_linux.dtb`.
 ## Verify your build
 
 ```
-e8e4dda14d3cb2580395880f068298ab8c60266d75377cd7c39734a6f73370b5  Image
+ee6433ad409e9250e2b13f3993949843aa51eef6771cd8d1729c7c08caad71ec  Image
 d1e2267f5e945acff73f7a8973af9fcbb2d777faf26771e2a7e75687537ffda8  sc2_s905x4_ah212_linux.dtb
 ```
 
 These are the current hashes in [`../kernel/SHA256SUMS`](../kernel/SHA256SUMS),
-which tracks **the kernel this repository ships** — the one v0.7.3-wifi uses.
+which tracks **the kernel this repository ships** — the one v0.8.0-docker uses.
 **They are not the hashes of any released image.** Each release note under
 [`releases/`](releases/) records its own, and those are frozen: the
 v0.6-desktop `Image` is `39b91fd0…`, the v0.5.x `Image` is `93420f6a…`.

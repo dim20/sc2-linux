@@ -105,15 +105,16 @@ umount /mnt/b
 ```
 
 Compare with the release's `SHA256SUMS` (in `dist/`, or on the Releases
-page). For v0.7.3-wifi:
+page). For v0.8.0-docker:
 
 ```
-e8e4dda14d3cb2580395880f068298ab8c60266d75377cd7c39734a6f73370b5  Image
+ee6433ad409e9250e2b13f3993949843aa51eef6771cd8d1729c7c08caad71ec  Image
 d1e2267f5e945acff73f7a8973af9fcbb2d777faf26771e2a7e75687537ffda8  sc2_s905x4_ah212_linux.dtb
 ```
 
 `uname -r` does **not** identify the release: it is the vendor tree's
-`git describe` output and is identical across v0.7.2 and v0.7.3-wifi.
+`git describe` output and is identical across v0.7.2, v0.7.3-wifi and
+v0.8.0-docker.
 
 ## What it does not do
 

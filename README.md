@@ -15,15 +15,19 @@ nothing plugged in. The USB stick is the installer and the recovery key.
 
 ## Current release
 
-**v0.7.3-wifi** (2026-10-29) — the Realtek RTL8822CS WiFi stack, shipped
-as six loadable modules. Kernel package label `5.4.210-sc2-wifi2`.
+**v0.8.0-docker** (2026-11-09) — Docker/containerd/runc support. Kernel
+package label `5.4.210-sc2-docker1`.
 
-Verified on DEB 1: USB boot passed 24/24 smoke checks, the eMMC installer
-completed and verified its writes, and the box cold-booted from eMMC with
-the stick removed (24/24 again).
+The kernel now creates container namespaces and cgroups, provides the
+bridge/nftables plumbing and overlay2 storage, and fits the 48 MiB eMMC
+BOOT partition by shipping the optional filesystems as loadable modules.
+The kernel package was installed on the development box, rebooted, and
+`docker run hello-world` plus a bridge-network fetch succeeded. The stick
+image is built and manifest-checked; the stick boot itself is the remaining
+hardware gate.
 
-See [`docs/releases/v0.7.3-wifi.md`](docs/releases/v0.7.3-wifi.md) for the
-full note, assets and hashes.
+See [`docs/releases/v0.8.0-docker.md`](docs/releases/v0.8.0-docker.md) for
+the full note, assets and hashes.
 
 ## Quick start
 
@@ -81,6 +85,7 @@ status 0 means all checks passed.
 | Kernel rollback | ✅ via the separate `sc2-kernel` package (`sc2-kernel-list` / `sc2-kernel-select`) |
 | Clock | ✅ chrony with a persisted last-known-good fallback |
 | WiFi | ✅ RTL8822CS driver, firmware and `wlan0`; add your own credentials (association tested on the development box) |
+| Containers | ✅ Docker/containerd/runc: namespaces, cgroups, overlay2 and bridge networking (install `docker.io docker-cli`, then see the legacy-iptables note below) |
 | Verification | ✅ 24-check smoke test shipped since v0.7.1-tty |
 
 ## What does not work, or needs care
@@ -92,6 +97,7 @@ status 0 means all checks passed.
 | Bluetooth | ❌ unverified; no `/sys/class/bluetooth` device |
 | Hardware coverage | ⚠️ tested on one board model only |
 | Kernel updates | ⚠️ vendor 5.4.210 tree; no upstream security updates |
+| Docker networking | ⚠️ Debian 13's `iptables-nft` cannot append rules on this 5.4 kernel; point `iptables`/`ip6tables` at the legacy alternatives before starting Docker (see the release note) |
 | Default password | ⚠️ `root` / `tvbox` is published; change it |
 | Old images | ⚠️ images older than v0.7 panic if `/dev/fb0` is opened |
 | Factory boxes | ⚠️ some need the serial console once to boot the stick |

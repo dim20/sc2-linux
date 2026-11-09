@@ -492,11 +492,15 @@ if [ -f "$MODROOT/VERSION" ]; then
     MODDEST="$ROOTFS_TREE/lib/modules/$MODVER/extra"
     if [ -d "$MODSRC" ]; then
         mkdir -p "$MODDEST"
+        # Replace the set, do not merge into it. A module that was a module
+        # in an older kernel but is built in now (ccm, for example) would
+        # otherwise survive as a stale file that depmod still indexes.
+        rm -f "$MODDEST"/*.ko
         cp -a "$MODSRC"/*.ko "$MODDEST/"
         # depmod writes modules.dep and the alias files that modprobe reads.
         # Run it against the staged tree, not the host's own module tree.
         depmod -b "$ROOTFS_TREE" "$MODVER"
-        log "  installed WiFi modules for $MODVER from ${MODSRC#$REPO/}"
+        log "  installed loadable modules for $MODVER from ${MODSRC#$REPO/}"
     else
         log "  WARNING: $MODROOT/VERSION names $MODVER, but $MODSRC does not exist"
     fi

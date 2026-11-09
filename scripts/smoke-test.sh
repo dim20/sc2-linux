@@ -41,7 +41,7 @@ set -uo pipefail
 
 # The kernel this script was shipped with. Overridden by the sc2-kernel
 # package's own SHA256SUMS when that package is installed.
-EXPECT_IMAGE=${EXPECT_IMAGE:-e8e4dda14d3cb2580395880f068298ab8c60266d75377cd7c39734a6f73370b5}
+EXPECT_IMAGE=${EXPECT_IMAGE:-ee6433ad409e9250e2b13f3993949843aa51eef6771cd8d1729c7c08caad71ec}
 EXPECT_DTB=${EXPECT_DTB:-d1e2267f5e945acff73f7a8973af9fcbb2d777faf26771e2a7e75687537ffda8}
 
 QUIET=0
