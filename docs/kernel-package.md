@@ -9,7 +9,7 @@ The kernel for this box, as a Debian package, so that `apt` can
 install it and switch between versions.
 
 ```
-apt install ./linux-image-sc2_5.4.210-sc2-wifi2_arm64.deb
+apt install ./linux-image-sc2_5.4.210-sc2-docker1_arm64.deb
 ```
 
 ---
@@ -36,7 +36,7 @@ The package does all three.
 
 | | |
 |---|---|
-| The kernel | 34.5 MB, `Image` |
+| The kernel | 35.3 MB, `Image` |
 | The device tree | 79 KB, `sc2_s905x4_ah212_linux.dtb` |
 | The hashes | `SHA256SUMS`, so what was installed can be checked |
 | `activate` | the shared logic: write, archive, verify |
@@ -44,10 +44,22 @@ The package does all three.
 | `sc2-kernel-select` | choose which kernel boots |
 
 **The package contains no modules.** The kernel Image is monolithic except
-for the WiFi stack, and those modules ship in the OS image, not in this
-package. The package has no `/usr/lib/modules` tree, so it stays small. A
-kernel-package update replaces the Image; the matching WiFi modules must
-come from the same release image (or be rebuilt against the new kernel).
+for the WiFi stack and the optional filesystems, and those modules ship in
+the OS image, not in this package. The package has no `/usr/lib/modules`
+tree, so it stays small.
+
+That makes the kernel and the module set two halves of one pair, and
+`activate` treats them that way: when it archives the kernel it is about
+to replace, it also archives that kernel's
+`/lib/modules/<uname -r>/extra/` set, and when that kernel is selected
+again it puts the modules back and runs `depmod`. The sets are keyed by
+the kernel hash. A kernel with `CONFIG_MODVERSIONS` and
+`CONFIG_PANIC_ON_OOPS` panics on the first module built against a
+different config, so swapping only the Image is not safe.
+
+A *new* kernel still needs its matching modules from the same release
+image (or rebuilt against it). `activate` warns if the kernel it is
+installing has no archived module set.
 
 ## The version label, and `uname -r`
 
@@ -55,11 +67,11 @@ Two strings appear in this project and they are **not the same thing**:
 
 | | value | what it is |
 |---|---|---|
-| `kernel/VERSION` | `5.4.210-sc2-wifi2` | the release label for the package — the version apt sees |
+| `kernel/VERSION` | `5.4.210-sc2-docker1` | the release label for the package — the version apt sees |
 | `uname -r` | `5.4.210-ga3aaaa5b0e64-dirty` | what the kernel reports — the vendor tree's `git describe` output |
 
 The package is versioned with the label, so the file is
-`linux-image-sc2_5.4.210-sc2-wifi2_arm64.deb`. The running kernel keeps the
+`linux-image-sc2_5.4.210-sc2-docker1_arm64.deb`. The running kernel keeps the
 vendor string, because changing it would mean rebuilding the `Image` to
 change a string — and the published `Image` has been reproduced and
 tested. The label is the **package's** identity, not the kernel's.
@@ -92,7 +104,8 @@ built after v0.7.3-wifi. Older images are found by what they *lack*:
 **The kernel package** — `sc2-kernel-list` prints every kernel installed
 under `/usr/lib/sc2-kernel/`, the archive, and which one the boot
 partition holds; `dpkg -l sc2-kernel` gives the label apt knows
-(`5.4.210-sc2-wifi2` is v0.7.3-wifi, `5.4.210-sc2` is v0.7.2). A plain
+(`5.4.210-sc2-docker1` is v0.8.0-docker, `5.4.210-sc2-wifi2` is
+v0.7.3-wifi, `5.4.210-sc2` is v0.7.2). A plain
 OS-image install does not carry the package, so this may be absent.
 
 **The exact kernel on the boot partition** — hash it. This is the only
@@ -140,7 +153,16 @@ of the installation. It is archived under **its own hash**, so putting
 a newer kernel on and then going back to the older one does not
 overwrite the older one with the newer one.
 
-The archive holds whole kernels, so it is kept to the last five.
+The matching module set is archived with it, in
+`/var/lib/sc2-kernel/archive/<its hash>/extra/`. Selecting that kernel
+puts the modules back under `/lib/modules/<uname -r>/extra/` and runs
+`depmod`. This is what makes a rollback safe: without it, the old
+kernel would load modules built against the new config and, because
+the vendor kernel sets `CONFIG_PANIC_ON_OOPS=y`, panic before the
+network comes up.
+
+The archive holds whole kernels and their modules, so it is kept to the
+last five.
 
 ### Putting a kernel back
 
@@ -156,6 +178,11 @@ reboot
 
 With the stick, the archive is on the eMMC's root filesystem, so the
 command finds it even though the running system is the stick.
+
+`sc2-kernel-select` restores the archived module set as well as the
+Image. If the chosen kernel has no archived modules, it warns instead of
+silently leaving a mismatched set in place — do not reboot until the
+matching modules are installed.
 
 ## The commands
 
@@ -192,7 +219,7 @@ to be fetched at install time.
 ```sh
 scripts/build-kernel-package.sh --kernel kernel/Image \
                                 --dtb kernel/sc2_s905x4_ah212_linux.dtb \
-                                --version 5.4.210-sc2-wifi2
+                                --version 5.4.210-sc2-docker1
 ```
 
 `SOURCE_DATE_EPOCH` must be set, or the package is not reproducible —

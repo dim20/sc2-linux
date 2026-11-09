@@ -26,10 +26,12 @@
 #
 # WHAT IS IN THE PACKAGE
 #
-#   The kernel Image (34.5 MB) and the device tree. There are NO
-#   MODULES: the Image is monolithic except for the WiFi stack. Those
-#   modules ship in the OS image, not in this package, so the package
-#   has no /lib/modules tree and stays small.
+#   The kernel Image (35.3 MB) and the device tree. There are NO
+#   MODULES: the Image is monolithic except for the WiFi stack and the
+#   optional filesystems. Those modules ship in the OS image, not in
+#   this package, so the package has no /lib/modules tree and stays
+#   small. The activate script archives and restores the module set
+#   that the OS image provides.
 #
 # WHAT IT DOES NOT DO
 #

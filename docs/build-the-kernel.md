@@ -169,7 +169,7 @@ make ARCH=arm64 CROSS_COMPILE=$CROSS_COMPILE O=out \
 Outputs:
 
 ```
-out/arch/arm64/boot/Image                              34,551,816 bytes
+out/arch/arm64/boot/Image                              37,021,704 bytes
 out/arch/arm64/boot/dts/amlogic/sc2_s905x4_ah212_linux.dtb   78,952 bytes
 ```
 

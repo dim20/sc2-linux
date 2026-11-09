@@ -10,7 +10,7 @@ an **errata** file next to it — never by rewriting the note.
 | `v0.1-testbox.md` … `v0.6-desktop.md` | the published notes, in order |
 | `v0.7-tty.md` | the TTY release, and what changed since v0.6; its later stick boot is recorded in `errata-v0.7.md` Addendum 1 |
 | `v0.7.1-tty.md` | the last release under the EON name: the fixes that did not make v0.7 |
-| `v0.8.0-docker.md` | the current release candidate: Docker/containerd/runc support, with the optional filesystems as 28 loadable modules. Kernel package verified on hardware; stick boot is the remaining gate |
+| `v0.8.0-docker.md` | the current release: Docker/containerd/runc support, with the optional filesystems as 28 loadable modules. Kernel package, stick boot and kernel rollback verified on hardware |
 | `v0.7.3-wifi.md` | the previous published release: the Realtek RTL8822CS WiFi stack as six loadable modules; stick boot, eMMC install and standalone cold boot verified 24/24 |
 | `v0.7.2-sc2.md` | the previous release: the rename; the same kernel and image changes as v0.7.1-tty, new branding. Verified on DEB 1: 24/24 smoke checks; the eMMC install and cold boot were also verified |
 | `errata-v0.7.2.md` | the eMMC install correction for v0.7.2-sc2 |

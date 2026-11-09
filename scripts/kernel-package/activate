@@ -8,6 +8,15 @@
 # boot command uses, and the kernel that was there is archived first,
 # so that it can be put back if the new one does not boot.
 #
+# WHY THE MODULES ARE ARCHIVED WITH THE KERNEL
+#
+#   The kernel and the .ko files built for it are a pair. A kernel with
+#   CONFIG_MODVERSIONS and PANIC_ON_OOPS will panic on the first module
+#   built against a different config, before the network comes up, so a
+#   rollback that swaps only the Image can leave the box unreachable.
+#   The module set under /lib/modules/<uname -r>/extra/ is therefore
+#   archived with the kernel and put back when that kernel is selected.
+#
 # WHY THE BOOT PARTITION AND NOT /boot
 #
 #   The vendor's U-Boot loads the kernel from the boot partition
@@ -158,22 +167,54 @@ if [ -n "$ROOTDEV" ]; then
 fi
 [ -n "$ARCHIVE" ] || die "cannot reach the root filesystem of this installation"
 
+# The module tree that belongs to the kernel on the boot partition lives
+# in the installation's root filesystem, not on the boot partition. When
+# the box is running from the stick, that root filesystem is mounted at
+# ARCHIVEMNT; otherwise it is "/". All the kernels this box carries use
+# the same uname -r, so the directory name is the running one.
+if [ -n "$ARCHIVEMNT" ]; then
+    ROOTPREFIX="$ARCHIVEMNT"
+else
+    ROOTPREFIX=""
+fi
+VER=$(uname -r)
+MODDIR="${ROOTPREFIX}/lib/modules/$VER/extra"
+
 # ------------------------------------------------------------- archive the old one
 # The kernel that is on the boot partition now is the one this box is
 # known to boot. It is copied into the archive before anything is
 # replaced, under its own hash, so it is never lost.
+#
+# SWITCHED records whether a different kernel was actually on the boot
+# partition. It is what tells a real rollback apart from reinstalling
+# the kernel that is already there, where warning about a missing
+# archived module set would be false.
+SWITCHED=0
 mkdir -p "$ARCHIVE"
 if mount -o ro "$BOOTDEV" "$MNT" 2>/dev/null; then
     if [ -f "$MNT/$IMAGE" ]; then
         cur=$(sha256sum "$MNT/$IMAGE" | cut -d' ' -f1)
         if [ "$cur" != "$want" ]; then
+            SWITCHED=1
             if [ ! -d "$ARCHIVE/$cur" ]; then
                 log "archiving the current kernel ($cur)"
                 mkdir -p "$ARCHIVE/$cur" || true
                 cp "$MNT/$IMAGE" "$ARCHIVE/$cur/$IMAGE" 2>/dev/null || true
                 [ -f "$MNT/$DTB" ] && cp "$MNT/$DTB" "$ARCHIVE/$cur/$DTB" 2>/dev/null || true
-                sync
             fi
+            # The kernel and its loadable modules are a pair. Archiving
+            # the Image alone is not enough: rolling back to a kernel
+            # while leaving a newer module set in /lib/modules makes
+            # modprobe load a module built against a different config,
+            # and a PANIC_ON_OOPS kernel then panics before the network
+            # comes up.
+            if [ ! -d "$ARCHIVE/$cur/extra" ] && [ -d "$MODDIR" ] \
+               && ls "$MODDIR"/*.ko >/dev/null 2>&1; then
+                mkdir -p "$ARCHIVE/$cur/extra" || true
+                cp "$MODDIR"/*.ko "$ARCHIVE/$cur/extra/" 2>/dev/null || true
+                log "archived the modules that belong to $cur"
+            fi
+            sync
         else
             log "the boot partition already has this kernel"
         fi
@@ -227,6 +268,32 @@ fi
 umount "$MNT"
 
 log "the kernel is installed and verified on $BOOTDEV"
+
+# ------------------------------------------------------------- the modules
+# Put back the module set that belongs to the kernel we just installed.
+# Without this, a rollback swaps the Image and leaves the newer modules
+# in place; a PANIC_ON_OOPS kernel then panics on the first mismatched
+# module before the network comes up. The sets are keyed by the kernel
+# hash, so switching back and forth restores the right pair each time.
+if [ -d "$ARCHIVE/$want/extra" ] && ls "$ARCHIVE/$want/extra"/*.ko >/dev/null 2>&1; then
+    mkdir -p "$MODDIR"
+    rm -f "$MODDIR"/*.ko
+    cp "$ARCHIVE/$want/extra"/*.ko "$MODDIR/"
+    sync
+    if command -v depmod >/dev/null 2>&1; then
+        depmod -b "${ROOTPREFIX:-/}" "$VER" 2>/dev/null || \
+            log "WARNING: depmod failed; run it by hand before rebooting"
+    fi
+    log "restored the module set for $want"
+elif [ "$SWITCHED" = 1 ]; then
+    # Only a real switch leaves a mismatched set behind. Reinstalling
+    # the kernel that is already on the boot partition does not.
+    log "WARNING: no archived module set for $want"
+    log "WARNING: the modules on this box may not match it, and a"
+    log "WARNING: mismatched module can panic a PANIC_ON_OOPS kernel."
+    log "WARNING: install the matching module set from the same release"
+    log "WARNING: before rebooting."
+fi
 
 # ------------------------------------------------------------- trim the archive
 # The archive holds whole kernels, so it is kept small on purpose.

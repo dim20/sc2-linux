@@ -22,9 +22,9 @@ The kernel now creates container namespaces and cgroups, provides the
 bridge/nftables plumbing and overlay2 storage, and fits the 48 MiB eMMC
 BOOT partition by shipping the optional filesystems as loadable modules.
 The kernel package was installed on the development box, rebooted, and
-`docker run hello-world` plus a bridge-network fetch succeeded. The stick
-image is built and manifest-checked; the stick boot itself is the remaining
-hardware gate.
+`docker run hello-world` plus a bridge-network fetch succeeded. The release
+image was written to a stick and booted, and the kernel rollback was
+exercised in both directions with the matching module sets.
 
 See [`docs/releases/v0.8.0-docker.md`](docs/releases/v0.8.0-docker.md) for
 the full note, assets and hashes.
@@ -82,7 +82,7 @@ status 0 means all checks passed.
 | Network | ✅ Ethernet, DHCP, DNS, SSH |
 | Audio | ✅ HDMI audio (the image selects `Tdm_C` at boot) |
 | eMMC install | ✅ automated, verifies every write, sets the boot command |
-| Kernel rollback | ✅ via the separate `sc2-kernel` package (`sc2-kernel-list` / `sc2-kernel-select`) |
+| Kernel rollback | ✅ via the separate `sc2-kernel` package; `sc2-kernel-select` restores the matching kernel and module set |
 | Clock | ✅ chrony with a persisted last-known-good fallback |
 | WiFi | ✅ RTL8822CS driver, firmware and `wlan0`; add your own credentials (association tested on the development box) |
 | Containers | ✅ Docker/containerd/runc: namespaces, cgroups, overlay2 and bridge networking (install `docker.io docker-cli`, then see the legacy-iptables note below) |

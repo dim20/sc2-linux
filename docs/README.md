@@ -61,12 +61,11 @@ When two sources disagree, the higher one wins.
 
 ## What is true now (2026-11-09)
 
-- The **current release candidate is v0.8.0-docker**: Docker, containerd
-  and runc support, with the optional filesystems shipped as loadable
-  modules. The kernel package passed on hardware (cold boot, namespaces,
-  Docker `hello-world`, bridge networking); the stick boot is the
-  remaining gate. v0.7.3-wifi remains the last published release until
-  that gate passes. See
+- The **current release is v0.8.0-docker**: Docker, containerd and runc
+  support, with the optional filesystems shipped as loadable modules. The
+  kernel package passed on hardware (cold boot, namespaces, Docker
+  `hello-world`, bridge networking), the release image was stick-booted,
+  and the kernel rollback was verified. See
   [`releases/v0.8.0-docker.md`](releases/v0.8.0-docker.md).
 - The **text console on HDMI works** and the USB stick is both installer
   and recovery key.
